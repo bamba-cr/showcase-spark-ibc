@@ -90,121 +90,134 @@ export const ProjectGallery = () => {
   );
 
   return (
-    <div id="projects" className="container mx-auto py-16 px-4">
-      <h2 className="text-3xl md:text-4xl font-bold text-ibc-purple text-center mb-8">
-        Nossos Projetos
-      </h2>
+    <div id="projects" className="relative min-h-screen py-16 px-4 bg-white overflow-hidden">
+      <div className="absolute inset-0 bg-diagonal-lines opacity-30" />
       
-      <div className="flex flex-wrap gap-4 mb-8 justify-center">
-        <button
-          className={`px-4 py-2 rounded-full transition-all ${
-            !selectedCategory
-              ? "bg-ibc-purple text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-          onClick={() => {
-            setSelectedCategory(null);
-            setPage(1);
-          }}
-        >
-          Todos
-        </button>
-        {categories.map((category) => (
+      <div className="container mx-auto relative z-10">
+        <h2 className="text-4xl md:text-5xl font-bold text-ibc-purple text-center mb-4">
+          Nossos Projetos
+        </h2>
+        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+          Conheça nossas iniciativas que transformam vidas através do esporte e da educação
+        </p>
+        
+        <div className="flex flex-wrap gap-4 mb-12 justify-center">
           <button
-            key={category}
-            className={`px-4 py-2 rounded-full transition-all ${
-              selectedCategory === category
-                ? "bg-ibc-purple text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            className={`px-6 py-3 rounded-full transition-all transform hover:scale-105 ${
+              !selectedCategory
+                ? "bg-ibc-purple text-white shadow-lg shadow-ibc-purple/20"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
             onClick={() => {
-              setSelectedCategory(category);
+              setSelectedCategory(null);
               setPage(1);
             }}
           >
-            {category.charAt(0).toUpperCase() + category.slice(1)}
+            Todos
           </button>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {currentProjects.map((project) => (
-          <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            key={project.id}
-            className="bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition-all hover:scale-105"
-            onClick={() => setSelectedProject(project)}
-          >
-            <img
-              src={project.imageUrl}
-              alt={project.title}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h3 className="text-xl font-semibold text-ibc-purple mb-2">
-                {project.title}
-              </h3>
-              <p className="text-gray-600">{project.description}</p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-8">
-          <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="p-2 rounded-full bg-gray-200 disabled:opacity-50 hover:bg-gray-300 transition-colors"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <span className="text-gray-600">
-            Página {page} de {totalPages}
-          </span>
-          <button
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            className="p-2 rounded-full bg-gray-200 disabled:opacity-50 hover:bg-gray-300 transition-colors"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-        </div>
-      )}
-
-      {/* Project Modal */}
-      {selectedProject && (
-        <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedProject(null)}
-        >
-          <div
-            className="bg-white rounded-lg max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={selectedProject.imageUrl}
-              alt={selectedProject.title}
-              className="w-full h-64 object-cover rounded-lg mb-4"
-            />
-            <h2 className="text-2xl font-bold text-ibc-purple mb-2">
-              {selectedProject.title}
-            </h2>
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              {selectedProject.fullDescription || selectedProject.description}
-            </p>
+          {categories.map((category) => (
             <button
-              className="bg-ibc-purple text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition-all"
-              onClick={() => setSelectedProject(null)}
+              key={category}
+              className={`px-6 py-3 rounded-full transition-all transform hover:scale-105 ${
+                selectedCategory === category
+                  ? "bg-ibc-purple text-white shadow-lg shadow-ibc-purple/20"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+              onClick={() => {
+                setSelectedCategory(category);
+                setPage(1);
+              }}
             >
-              Fechar
+              {category.charAt(0).toUpperCase() + category.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {currentProjects.map((project) => (
+            <motion.div
+              layout
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              key={project.id}
+              className="group relative bg-white rounded-xl shadow-xl overflow-hidden cursor-pointer transform transition-all hover:scale-105 hover:shadow-2xl"
+              onClick={() => setSelectedProject(project)}
+            >
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <img
+                src={project.imageUrl}
+                alt={project.title}
+                className="w-full h-64 object-cover transition-transform group-hover:scale-110"
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-6 group-hover:translate-y-0 transition-transform">
+                <h3 className="text-2xl font-bold mb-2">
+                  {project.title}
+                </h3>
+                <p className="text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {project.description}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-6 mt-12">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="p-3 rounded-full bg-ibc-purple text-white disabled:opacity-50 hover:bg-opacity-90 transition-colors"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <span className="text-ibc-purple font-semibold">
+              Página {page} de {totalPages}
+            </span>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="p-3 rounded-full bg-ibc-purple text-white disabled:opacity-50 hover:bg-opacity-90 transition-colors"
+            >
+              <ChevronRight className="w-6 h-6" />
             </button>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Modal de Projeto */}
+        {selectedProject && (
+          <div
+            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+            onClick={() => setSelectedProject(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-2xl max-w-4xl w-full p-8 max-h-[90vh] overflow-y-auto relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={selectedProject.imageUrl}
+                alt={selectedProject.title}
+                className="w-full h-80 object-cover rounded-xl mb-6"
+              />
+              <h2 className="text-3xl font-bold text-ibc-purple mb-4">
+                {selectedProject.title}
+              </h2>
+              <p className="text-gray-600 text-lg leading-relaxed mb-8">
+                {selectedProject.fullDescription || selectedProject.description}
+              </p>
+              <button
+                className="absolute top-4 right-4 bg-ibc-purple text-white px-6 py-2 rounded-full hover:bg-opacity-90 transition-all"
+                onClick={() => setSelectedProject(null)}
+              >
+                Fechar
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
