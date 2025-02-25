@@ -17,7 +17,7 @@ const projects = [
     id: "1",
     title: "Capoeira – Roda do Bem",
     category: "capoeira",
-    imageUrl: "/placeholder.svg",
+    imageUrl: "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
     description: "Rodas e treinos de capoeira para desenvolvimento físico e cultural.",
     fullDescription: "Nosso projeto de capoeira visa desenvolver habilidades físicas, mentais e culturais através desta arte marcial brasileira. Com aulas regulares, eventos e apresentações, os alunos aprendem não apenas os movimentos, mas também a história e a música da capoeira."
   },
@@ -25,7 +25,7 @@ const projects = [
     id: "2",
     title: "Futebol – Show de Bola",
     category: "futebol",
-    imageUrl: "/placeholder.svg",
+    imageUrl: "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
     description: "Partidas e campeonatos de futebol para jovens atletas.",
     fullDescription: "O projeto Show de Bola oferece treinamento profissional de futebol para jovens, desenvolvendo habilidades técnicas, trabalho em equipe e disciplina. Realizamos campeonatos internos e participamos de competições regionais."
   },
@@ -33,7 +33,7 @@ const projects = [
     id: "3",
     title: "Judô – Campeões do Futuro",
     category: "judo",
-    imageUrl: "/placeholder.svg",
+    imageUrl: "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
     description: "Treinamento e competições de judô para todas as idades.",
     fullDescription: "O projeto Campeões do Futuro desenvolve valores como disciplina, respeito e perseverança através do judô. Oferecemos aulas para diferentes níveis e idades, participando regularmente de competições estaduais e nacionais."
   },
@@ -41,7 +41,7 @@ const projects = [
     id: "4",
     title: "Música – Culturart",
     category: "musica",
-    imageUrl: "/placeholder.svg",
+    imageUrl: "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
     description: "Aulas de música e apresentações culturais.",
     fullDescription: "O Culturart proporciona educação musical completa, incluindo teoria musical, prática instrumental e canto. Realizamos apresentações regulares e participamos de eventos culturais na comunidade."
   },
@@ -49,7 +49,7 @@ const projects = [
     id: "5",
     title: "Informática – Conecte-se",
     category: "informatica",
-    imageUrl: "/placeholder.svg",
+    imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
     description: "Cursos de tecnologia e inclusão digital.",
     fullDescription: "O projeto Conecte-se oferece cursos de informática básica, programação e design digital, preparando os participantes para o mercado de trabalho e promovendo inclusão digital."
   },
@@ -57,7 +57,7 @@ const projects = [
     id: "6",
     title: "Zumba em Movimento",
     category: "zumba",
-    imageUrl: "/placeholder.svg",
+    imageUrl: "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
     description: "Aulas de zumba e eventos fitness.",
     fullDescription: "Projeto que promove saúde e bem-estar através de aulas dinâmicas de zumba. Realizamos encontros semanais e eventos especiais, incentivando um estilo de vida ativo e saudável."
   },
@@ -65,7 +65,7 @@ const projects = [
     id: "7",
     title: "Reforço Escolar – Mentes Brilhantes",
     category: "educacao",
-    imageUrl: "/placeholder.svg",
+    imageUrl: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
     description: "Apoio educacional e acompanhamento pedagógico.",
     fullDescription: "O projeto Mentes Brilhantes oferece suporte educacional personalizado, ajudando estudantes a superarem dificuldades acadêmicas e desenvolverem métodos eficientes de estudo."
   }
