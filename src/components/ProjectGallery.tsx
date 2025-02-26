@@ -1,16 +1,7 @@
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-export type Project = {
-  id: string;
-  title: string;
-  category: string;
-  imageUrl: string;
-  description: string;
-  fullDescription?: string;
-};
+import { Project } from "@/types/Project";
 
 const projects = [
   {
@@ -74,8 +65,7 @@ const projects = [
 export const ProjectGallery = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [page, setPage] = useState(1);
-  const projectsPerPage = 6;
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   const categories = [...new Set(projects.map((project) => project.category))];
 
@@ -83,14 +73,17 @@ export const ProjectGallery = () => {
     ? projects.filter((project) => project.category === selectedCategory)
     : projects;
 
-  const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
-  const currentProjects = filteredProjects.slice(
-    (page - 1) * projectsPerPage,
-    page * projectsPerPage
-  );
+  const scrollContainer = (direction: "left" | "right") => {
+    const container = document.getElementById("projects-container");
+    if (container) {
+      const scrollAmount = direction === "left" ? -400 : 400;
+      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      setScrollPosition(container.scrollLeft + scrollAmount);
+    }
+  };
 
   return (
-    <div id="projects" className="relative min-h-screen py-16 px-4 bg-white overflow-hidden">
+    <div id="projects" className="relative min-h-screen py-16 bg-white overflow-hidden">
       <div className="absolute inset-0 bg-diagonal-lines opacity-30" />
       
       <div className="container mx-auto relative z-10">
@@ -108,10 +101,7 @@ export const ProjectGallery = () => {
                 ? "bg-ibc-purple text-white shadow-lg shadow-ibc-purple/20"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
-            onClick={() => {
-              setSelectedCategory(null);
-              setPage(1);
-            }}
+            onClick={() => setSelectedCategory(null)}
           >
             Todos
           </button>
@@ -123,68 +113,64 @@ export const ProjectGallery = () => {
                   ? "bg-ibc-purple text-white shadow-lg shadow-ibc-purple/20"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
-              onClick={() => {
-                setSelectedCategory(category);
-                setPage(1);
-              }}
+              onClick={() => setSelectedCategory(category)}
             >
               {category.charAt(0).toUpperCase() + category.slice(1)}
             </button>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {currentProjects.map((project) => (
-            <motion.div
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              key={project.id}
-              className="group relative bg-white rounded-xl shadow-xl overflow-hidden cursor-pointer transform transition-all hover:scale-105 hover:shadow-2xl"
-              onClick={() => setSelectedProject(project)}
-            >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <img
-                src={project.imageUrl}
-                alt={project.title}
-                className="w-full h-64 object-cover transition-transform group-hover:scale-110"
-              />
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-6 group-hover:translate-y-0 transition-transform">
-                <h3 className="text-2xl font-bold mb-2">
-                  {project.title}
-                </h3>
-                <p className="text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {project.description}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+        <div className="relative">
+          <button
+            onClick={() => scrollContainer("left")}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 text-ibc-purple p-3 rounded-full shadow-lg hover:bg-ibc-purple hover:text-white transition-colors"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+
+          <div
+            id="projects-container"
+            className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory gap-6 px-4 pb-8"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {filteredProjects.map((project) => (
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                key={project.id}
+                className="group relative bg-white rounded-xl shadow-xl overflow-hidden cursor-pointer min-w-[300px] md:min-w-[400px] snap-center transform transition-all hover:scale-105"
+                onClick={() => setSelectedProject(project)}
+              >
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <img
+                  src={project.imageUrl}
+                  alt={project.title}
+                  className="w-full h-64 object-cover transition-transform group-hover:scale-110"
+                />
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-6 group-hover:translate-y-0 transition-transform">
+                  <h3 className="text-2xl font-bold mb-2">
+                    {project.title}
+                  </h3>
+                  <p className="text-white/90 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {project.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => scrollContainer("right")}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 text-ibc-purple p-3 rounded-full shadow-lg hover:bg-ibc-purple hover:text-white transition-colors"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
         </div>
 
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-6 mt-12">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="p-3 rounded-full bg-ibc-purple text-white disabled:opacity-50 hover:bg-opacity-90 transition-colors"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <span className="text-ibc-purple font-semibold">
-              Página {page} de {totalPages}
-            </span>
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="p-3 rounded-full bg-ibc-purple text-white disabled:opacity-50 hover:bg-opacity-90 transition-colors"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </div>
-        )}
-
-        {/* Modal de Projeto */}
         {selectedProject && (
           <div
             className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm"

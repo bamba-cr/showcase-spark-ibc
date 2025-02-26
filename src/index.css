@@ -61,8 +61,13 @@
 }
 
 @layer utilities {
-  .gradient-text {
-    @apply bg-gradient-to-r from-secondary via-secondary/80 to-primary bg-clip-text text-transparent;
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
   
   .hero-pattern {
