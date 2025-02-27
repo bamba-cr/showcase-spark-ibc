@@ -29,17 +29,17 @@ export const Navbar = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.5 }}
       className={`fixed w-full z-50 transition-all duration-300 ${
-        isScrolled 
-          ? "bg-white/90 backdrop-blur-md shadow-lg" 
+        isScrolled || isMobileMenuOpen
+          ? "bg-white/95 backdrop-blur-md shadow-lg" 
           : "bg-transparent"
       }`}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16 md:h-20">
           <a 
             href="#" 
-            className={`text-2xl font-bold font-heading transition-colors ${
-              isScrolled ? "text-primary" : "text-white"
+            className={`text-xl md:text-2xl font-bold font-heading transition-colors ${
+              isScrolled || isMobileMenuOpen ? "text-primary" : "text-white"
             }`}
           >
             Instituto IBC
@@ -80,7 +80,7 @@ export const Navbar = () => {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
             {menuItems.map((item) => (
               <a
                 key={item.label}
@@ -109,11 +109,12 @@ export const Navbar = () => {
           {/* Mobile Menu Button */}
           <button
             className={`md:hidden p-2 rounded-full ${
-              isScrolled ? "text-primary" : "text-white"
+              isScrolled || isMobileMenuOpen ? "text-primary" : "text-white"
             }`}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Menu"
           >
-            {isMobileMenuOpen ? <X /> : <Menu />}
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
@@ -133,24 +134,24 @@ export const Navbar = () => {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-gray-700 hover:text-primary transition-colors py-2 border-b border-gray-100"
+                className="text-gray-700 hover:text-primary transition-colors py-3 border-b border-gray-100 text-base font-medium"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {item.label}
               </a>
             ))}
-            <div className="flex space-x-4 pt-2">
-              <a href="#" className="text-primary hover:text-primary-dark transition-colors">
-                <Instagram size={20} />
+            <div className="flex space-x-4 pt-2 justify-center">
+              <a href="#" className="text-primary hover:text-primary-dark transition-colors p-2">
+                <Instagram size={22} />
               </a>
-              <a href="#" className="text-primary hover:text-primary-dark transition-colors">
-                <Facebook size={20} />
+              <a href="#" className="text-primary hover:text-primary-dark transition-colors p-2">
+                <Facebook size={22} />
               </a>
-              <a href="#" className="text-primary hover:text-primary-dark transition-colors">
-                <Linkedin size={20} />
+              <a href="#" className="text-primary hover:text-primary-dark transition-colors p-2">
+                <Linkedin size={22} />
               </a>
-              <a href="#" className="text-primary hover:text-primary-dark transition-colors">
-                <Mail size={20} />
+              <a href="#" className="text-primary hover:text-primary-dark transition-colors p-2">
+                <Mail size={22} />
               </a>
             </div>
           </div>

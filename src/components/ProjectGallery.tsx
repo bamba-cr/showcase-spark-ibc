@@ -116,17 +116,17 @@ const ProjectCard = ({ project, onClick }: { project: Project; onClick: () => vo
       exit={{ opacity: 0 }}
       className="card-hover bg-white rounded-xl overflow-hidden shadow-md"
     >
-      <div className="p-6">
-        <div className="flex items-center mb-4">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mr-4 shrink-0">
-            <img src={project.logoUrl} alt={project.title} className="w-10 h-10" />
+      <div className="p-4 sm:p-6">
+        <div className="flex items-center mb-3 sm:mb-4">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center mr-3 sm:mr-4 shrink-0">
+            <img src={project.logoUrl} alt={project.title} className="w-7 h-7 sm:w-10 sm:h-10" />
           </div>
-          <h3 className="text-xl font-bold text-gray-800 font-heading">{project.title}</h3>
+          <h3 className="text-lg sm:text-xl font-bold text-gray-800 font-heading">{project.title}</h3>
         </div>
         
-        <p className="text-gray-600 mb-6">{project.description}</p>
+        <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">{project.description}</p>
         
-        <div className="relative h-48 rounded-lg overflow-hidden mb-4">
+        <div className="relative h-40 sm:h-48 rounded-lg overflow-hidden mb-3 sm:mb-4">
           <img 
             src={project.imageUrl} 
             alt={project.title} 
@@ -134,7 +134,7 @@ const ProjectCard = ({ project, onClick }: { project: Project; onClick: () => vo
           />
         </div>
         
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        <div className="grid grid-cols-3 gap-1 sm:gap-2 mb-3 sm:mb-4">
           {project.gallery.slice(0, 3).map((img, idx) => (
             <div key={idx} className="aspect-square rounded-md overflow-hidden">
               <img 
@@ -148,9 +148,9 @@ const ProjectCard = ({ project, onClick }: { project: Project; onClick: () => vo
         
         <button 
           onClick={onClick}
-          className="w-full py-3 rounded-lg bg-primary text-white flex items-center justify-center gap-2 hover:bg-primary-dark transition-colors"
+          className="w-full py-2.5 sm:py-3 rounded-lg bg-primary text-white flex items-center justify-center gap-2 hover:bg-primary-dark transition-colors text-sm sm:text-base"
         >
-          Ver Mais <ExternalLink size={16} />
+          Ver Mais <ExternalLink size={14} className="sm:w-4 sm:h-4" />
         </button>
       </div>
     </motion.div>
@@ -184,13 +184,13 @@ const ProjectDetail = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 md:p-8"
+      className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-3 md:p-8"
     >
       <button
-        className="absolute top-4 right-4 text-white z-10 p-2 hover:bg-white/10 rounded-full transition-colors"
+        className="absolute top-3 right-3 md:top-4 md:right-4 text-white z-10 p-2 hover:bg-white/10 rounded-full transition-colors"
         onClick={onClose}
       >
-        <X className="w-8 h-8" />
+        <X className="w-6 h-6 md:w-8 md:h-8" />
       </button>
 
       <div className="w-full max-w-5xl bg-white rounded-xl overflow-hidden shadow-2xl">
@@ -204,24 +204,24 @@ const ProjectDetail = ({
               />
               
               <button
-                className="absolute left-2 top-1/2 -translate-y-1/2 text-white z-10 p-2 bg-black/40 hover:bg-black/60 rounded-full transition-colors"
+                className="absolute left-2 top-1/2 -translate-y-1/2 text-white z-10 p-1.5 md:p-2 bg-black/40 hover:bg-black/60 rounded-full transition-colors"
                 onClick={prevImage}
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
               </button>
 
               <button
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-white z-10 p-2 bg-black/40 hover:bg-black/60 rounded-full transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-white z-10 p-1.5 md:p-2 bg-black/40 hover:bg-black/60 rounded-full transition-colors"
                 onClick={nextImage}
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
               </button>
 
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                 {project.gallery.map((_, index) => (
                   <button
                     key={index}
-                    className={`w-2 h-2 rounded-full transition-all ${
+                    className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full transition-all ${
                       currentImageIndex === index ? "bg-white" : "bg-white/30"
                     }`}
                     onClick={() => setCurrentImageIndex(index)}
@@ -231,21 +231,21 @@ const ProjectDetail = ({
             </div>
           </div>
           
-          <div className="w-full md:w-1/2 p-6 md:p-8">
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-3 shrink-0">
-                <img src={project.logoUrl} alt={project.title} className="w-8 h-8" />
+          <div className="w-full md:w-1/2 p-4 md:p-6 lg:p-8">
+            <div className="flex items-center mb-3 md:mb-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center mr-3 shrink-0">
+                <img src={project.logoUrl} alt={project.title} className="w-6 h-6 md:w-8 md:h-8" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 font-heading">{project.title}</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-800 font-heading">{project.title}</h2>
             </div>
             
-            <p className="text-gray-600 mb-6 leading-relaxed">
+            <p className="text-gray-600 mb-4 md:mb-6 leading-relaxed text-sm md:text-base">
               {project.fullDescription || project.description}
             </p>
             
-            <div className="border-t border-gray-200 pt-4">
-              <h3 className="text-lg font-semibold mb-3 text-gray-800">Galeria de Imagens</h3>
-              <div className="grid grid-cols-3 gap-2">
+            <div className="border-t border-gray-200 pt-3 md:pt-4">
+              <h3 className="text-base md:text-lg font-semibold mb-2 md:mb-3 text-gray-800">Galeria de Imagens</h3>
+              <div className="grid grid-cols-3 gap-1.5 md:gap-2">
                 {project.gallery.map((img, idx) => (
                   <div 
                     key={idx} 
@@ -264,10 +264,10 @@ const ProjectDetail = ({
               </div>
             </div>
             
-            <div className="mt-6">
+            <div className="mt-4 md:mt-6">
               <button 
                 onClick={onClose}
-                className="w-full py-3 rounded-lg border border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+                className="w-full py-2.5 md:py-3 rounded-lg border border-primary text-primary hover:bg-primary hover:text-white transition-colors text-sm md:text-base"
               >
                 Fechar
               </button>
@@ -296,27 +296,27 @@ export const ProjectGallery = () => {
   };
 
   return (
-    <section id="projects" className="py-20 bg-gray-50">
+    <section id="projects" className="py-12 md:py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-heading">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4 font-heading">
             Nossos Projetos
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
             Conheça as iniciativas que estão transformando vidas através do esporte e da educação.
           </p>
         </motion.div>
 
         {/* Filtro de categorias */}
-        <div className="mb-12">
-          <div className="flex flex-wrap gap-2 md:gap-4 justify-center">
+        <div className="mb-8 md:mb-12 overflow-x-auto scrollbar-hide pb-2">
+          <div className="flex flex-nowrap md:flex-wrap gap-2 md:gap-4 justify-start md:justify-center min-w-min">
             <button
-              className={`px-6 py-2 rounded-full text-sm transition-all ${
+              className={`px-4 md:px-6 py-1.5 md:py-2 rounded-full text-xs md:text-sm whitespace-nowrap transition-all ${
                 !selectedCategory
                   ? "bg-primary text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -328,7 +328,7 @@ export const ProjectGallery = () => {
             {categories.map((category) => (
               <button
                 key={category}
-                className={`px-6 py-2 rounded-full text-sm transition-all ${
+                className={`px-4 md:px-6 py-1.5 md:py-2 rounded-full text-xs md:text-sm whitespace-nowrap transition-all ${
                   selectedCategory === category
                     ? "bg-primary text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -342,7 +342,7 @@ export const ProjectGallery = () => {
         </div>
 
         {/* Grid de projetos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
           {filteredProjects.map((project) => (
             <ProjectCard 
               key={project.id} 
