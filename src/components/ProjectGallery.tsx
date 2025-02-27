@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
+import { useState, useRef } from "react";
+import { motion, AnimatePresence, PanInfo, useMotionValue } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Project } from "@/types/Project";
 
@@ -107,6 +108,29 @@ export const ProjectGallery = () => {
     ? projects.filter((project) => project.category === selectedCategory)
     : projects;
 
+  // Para funcionalidade de arrastar
+  const dragX = useMotionValue(0);
+  const dragConstraintsRef = useRef(null);
+
+  const handleDragEnd = (e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (!selectedProject) return;
+    
+    const threshold = 100; // Pixels necessários para mudar de imagem
+    const velocity = 500; // Velocidade mínima para mudar de imagem
+    
+    if (info.velocity.x > velocity || info.offset.x > threshold) {
+      // Arrasto para a direita - imagem anterior
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? selectedProject.gallery.length - 1 : prev - 1
+      );
+    } else if (info.velocity.x < -velocity || info.offset.x < -threshold) {
+      // Arrasto para a esquerda - próxima imagem
+      setCurrentImageIndex((prev) => 
+        prev === selectedProject.gallery.length - 1 ? 0 : prev + 1
+      );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black py-20">
       <div className="container mx-auto px-4 mb-12">
@@ -193,12 +217,23 @@ export const ProjectGallery = () => {
               <ChevronLeft className="w-8 h-8" />
             </button>
 
-            <div className="w-full h-full flex items-center justify-center p-4">
-              <img
-                src={selectedProject.gallery[currentImageIndex]}
-                alt={`${selectedProject.title} - Image ${currentImageIndex + 1}`}
-                className="max-h-[90vh] w-auto object-contain"
-              />
+            <div className="w-full h-full flex items-center justify-center p-4" ref={dragConstraintsRef}>
+              <motion.div
+                drag="x"
+                dragConstraints={dragConstraintsRef}
+                dragElastic={0.2}
+                dragMomentum={true}
+                style={{ x: dragX }}
+                onDragEnd={handleDragEnd}
+                className="w-full h-full flex items-center justify-center"
+              >
+                <img
+                  src={selectedProject.gallery[currentImageIndex]}
+                  alt={`${selectedProject.title} - Image ${currentImageIndex + 1}`}
+                  className="max-h-[90vh] w-auto object-contain"
+                  draggable="false"
+                />
+              </motion.div>
             </div>
 
             <button
