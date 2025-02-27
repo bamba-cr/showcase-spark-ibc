@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Project } from "@/types/Project";
-import { X } from "lucide-react";
+import { X, Upload, Trash2, PlusCircle, Image } from "lucide-react";
 
 type ProjectMediaManagerProps = {
   project: Project;
@@ -12,7 +12,10 @@ type ProjectMediaManagerProps = {
 export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerProps) => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
 
+  // Handler para vídeo
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -25,10 +28,18 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
     }
   };
 
+  // Handler para imagens
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length > 6) {
-      toast.error("Você pode selecionar no máximo 6 imagens.");
+    processImageFiles(files);
+  };
+
+  // Processamento de arquivos de imagem
+  const processImageFiles = (files: File[]) => {
+    // Verificar limite máximo de imagens (contando as já existentes)
+    const totalImages = project.gallery.length + imagePreviews.length + files.length;
+    if (totalImages > 6) {
+      toast.error(`Você ultrapassou o limite de 6 imagens (${project.gallery.length} existentes + ${files.length} novas).`);
       return;
     }
     
@@ -37,20 +48,85 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
       toast.error("Alguns arquivos selecionados não são imagens válidas.");
     }
     
-    setImageFiles(validFiles);
+    // Criar previews para as imagens selecionadas
+    validFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          setImagePreviews(prev => [...prev, e.target!.result as string]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    setImageFiles(prev => [...prev, ...validFiles]);
     toast.success(`${validFiles.length} imagens selecionadas com sucesso!`);
   };
 
+  // Funções para drag and drop
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files.length > 0) {
+      const files = Array.from(e.dataTransfer.files);
+      processImageFiles(files);
+    }
+  };
+
+  // Remover imagem do preview
+  const removeImagePreview = (index: number) => {
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Remover imagem existente da galeria
+  const removeExistingImage = (index: number) => {
+    const newGallery = [...project.gallery];
+    newGallery.splice(index, 1);
+    onUpdate({ ...project, gallery: newGallery });
+    toast.success("Imagem removida da galeria!");
+  };
+
+  // Submit do formulário
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     // Em uma implementação real, aqui você faria o upload dos arquivos para um servidor
     // e atualizaria as URLs no projeto
+    
+    // Simulação de upload bem-sucedido - apenas para demonstração
+    // Em uma implementação real, você precisaria usar um serviço de armazenamento
+    
+    const newGalleryItems = imagePreviews.map((preview) => preview);
+    const updatedGallery = [...project.gallery, ...newGalleryItems];
+    
+    onUpdate({
+      ...project,
+      gallery: updatedGallery,
+      video: videoFile ? URL.createObjectURL(videoFile) : project.video
+    });
+    
+    // Limpar estados após o sucesso
+    setVideoFile(null);
+    setImageFiles([]);
+    setImagePreviews([]);
+    
     toast.success("Mídia atualizada com sucesso!");
   };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
-      <h3 className="text-xl font-semibold text-ibc-purple mb-4">
+      <h3 className="text-xl font-semibold text-primary mb-4">
         Gerenciar Mídia - {project.title}
       </h3>
       
@@ -60,65 +136,156 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Vídeo Principal
           </label>
-          <input
-            type="file"
-            accept="video/*"
-            onChange={handleVideoChange}
-            className="w-full border border-gray-300 rounded-lg p-2"
-          />
+          <div className="flex items-center gap-2">
+            <input
+              type="file"
+              accept="video/*"
+              onChange={handleVideoChange}
+              className="hidden"
+              id="video-upload"
+            />
+            <label
+              htmlFor="video-upload"
+              className="flex items-center justify-center gap-2 w-full py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer"
+            >
+              <Upload size={20} />
+              <span>{videoFile ? videoFile.name : "Selecionar vídeo"}</span>
+            </label>
+            {videoFile && (
+              <button
+                type="button"
+                onClick={() => setVideoFile(null)}
+                className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors"
+              >
+                <X size={20} />
+              </button>
+            )}
+          </div>
+          
           {project.video && (
-            <div className="mt-2">
-              <p className="text-sm text-gray-600">Vídeo atual:</p>
-              <video
-                src={project.video}
-                className="mt-1 w-full max-h-40 object-cover rounded-lg"
-                controls
-              />
+            <div className="mt-3">
+              <p className="text-sm text-gray-600 mb-2">Vídeo atual:</p>
+              <div className="relative">
+                <video
+                  src={project.video}
+                  className="w-full max-h-40 object-cover rounded-lg"
+                  controls
+                />
+                <button
+                  type="button"
+                  className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-80 hover:opacity-100 transition-opacity"
+                  onClick={() => onUpdate({ ...project, video: undefined })}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
             </div>
           )}
         </div>
 
         {/* Galeria de Imagens */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Galeria de Imagens (máximo 6)
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleImagesChange}
-            className="w-full border border-gray-300 rounded-lg p-2"
-          />
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Galeria de Imagens
+            </label>
+            <span className="text-xs text-gray-500">
+              {project.gallery.length + imagePreviews.length}/6 imagens
+            </span>
+          </div>
+          
+          {/* Área de upload com drag and drop */}
+          <div
+            className={`border-2 border-dashed rounded-lg p-4 transition-colors ${
+              isDragging 
+                ? "border-primary bg-primary/10" 
+                : "border-gray-300 hover:border-primary hover:bg-primary/5"
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <div className="text-center">
+              <div className="flex justify-center mb-2">
+                <Image className="text-gray-400" size={32} />
+              </div>
+              <p className="text-sm text-gray-600">
+                Arraste e solte imagens aqui ou
+              </p>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImagesChange}
+                className="hidden"
+                id="gallery-upload"
+                disabled={project.gallery.length + imagePreviews.length >= 6}
+              />
+              <label
+                htmlFor="gallery-upload"
+                className="inline-block mt-2 px-4 py-1.5 bg-primary text-white text-sm rounded-md hover:bg-primary-dark transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <PlusCircle className="inline-block mr-1 w-4 h-4" />
+                Selecionar Imagens
+              </label>
+              <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF até 5MB</p>
+            </div>
+          </div>
+          
+          {/* Preview das novas imagens */}
+          {imagePreviews.length > 0 && (
+            <div className="mt-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Novas imagens:</h4>
+              <div className="grid grid-cols-3 gap-2">
+                {imagePreviews.map((preview, index) => (
+                  <div key={`new-${index}`} className="relative group">
+                    <img
+                      src={preview}
+                      alt={`Nova imagem ${index + 1}`}
+                      className="w-full h-24 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full group-hover:opacity-100 opacity-0 transition-opacity"
+                      onClick={() => removeImagePreview(index)}
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           
           {/* Preview da galeria atual */}
-          <div className="mt-4 grid grid-cols-3 gap-4">
-            {project.gallery.map((image, index) => (
-              <div key={index} className="relative group">
-                <img
-                  src={image}
-                  alt={`Imagem ${index + 1}`}
-                  className="w-full h-32 object-cover rounded-lg"
-                />
-                <button
-                  type="button"
-                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => {
-                    const newGallery = [...project.gallery];
-                    newGallery.splice(index, 1);
-                    onUpdate({ ...project, gallery: newGallery });
-                  }}
-                >
-                  <X size={16} />
-                </button>
+          {project.gallery.length > 0 && (
+            <div className="mt-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Imagens existentes:</h4>
+              <div className="grid grid-cols-3 gap-2">
+                {project.gallery.map((image, index) => (
+                  <div key={`existing-${index}`} className="relative group">
+                    <img
+                      src={image}
+                      alt={`Imagem ${index + 1}`}
+                      className="w-full h-24 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => removeExistingImage(index)}
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
 
         <button
           type="submit"
-          className="w-full bg-ibc-purple text-white py-2 rounded-lg hover:bg-opacity-90 transition-all"
+          className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary-dark transition-all"
         >
           Salvar Alterações
         </button>

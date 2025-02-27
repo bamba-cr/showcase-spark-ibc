@@ -1,7 +1,7 @@
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { X } from "lucide-react";
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Project } from "@/types/Project";
 
 // Dados dos projetos simplificados
@@ -13,7 +13,11 @@ const projects = [
     logoUrl: "https://img.icons8.com/fluency/96/capoeira.png",
     imageUrl: "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
     description: "Treinos de capoeira.",
-    gallery: ["https://images.unsplash.com/photo-1517022812141-23620dba5c23"]
+    gallery: [
+      "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
+      "https://images.unsplash.com/photo-1551522435-a13afa10f103",
+      "https://images.unsplash.com/photo-1635102707010-bcf2cb3b056f"
+    ]
   },
   {
     id: "2",
@@ -22,7 +26,11 @@ const projects = [
     logoUrl: "https://img.icons8.com/fluency/96/football2.png",
     imageUrl: "https://images.unsplash.com/photo-1606925797300-0b35e9d1794e",
     description: "Partidas de futebol.",
-    gallery: ["https://images.unsplash.com/photo-1606925797300-0b35e9d1794e"]
+    gallery: [
+      "https://images.unsplash.com/photo-1606925797300-0b35e9d1794e",
+      "https://images.unsplash.com/photo-1493924457718-be908a72059c",
+      "https://images.unsplash.com/photo-1494778696781-8f23fd5553c4"
+    ]
   },
   {
     id: "3",
@@ -31,14 +39,80 @@ const projects = [
     logoUrl: "https://img.icons8.com/fluency/96/musical-notes.png",
     imageUrl: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae",
     description: "Aulas de música.",
-    gallery: ["https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae"]
+    gallery: [
+      "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae",
+      "https://images.unsplash.com/photo-1511379938547-c1f69419868d",
+      "https://images.unsplash.com/photo-1513883049090-d0b7439799bf"
+    ]
   }
 ];
+
+// Componente de galeria de imagens com rolagem moderna
+const ImageGallery = ({ images }: { images: string[] }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const { current } = scrollRef;
+      const scrollAmount = direction === 'left' 
+        ? -current.offsetWidth / 2 
+        : current.offsetWidth / 2;
+      
+      current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  if (images.length === 0) {
+    return <div className="text-center text-gray-500 py-4">Sem imagens na galeria</div>;
+  }
+
+  return (
+    <div className="relative group">
+      <div
+        ref={scrollRef}
+        className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory gap-2 py-2"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {images.map((image, index) => (
+          <div 
+            key={index} 
+            className="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 snap-start"
+          >
+            <img
+              src={image}
+              alt={`Imagem ${index + 1}`}
+              className="w-full h-40 object-cover rounded-lg hover:opacity-90 transition-opacity"
+            />
+          </div>
+        ))}
+      </div>
+      
+      {images.length > 1 && (
+        <>
+          <button 
+            onClick={() => scroll('left')}
+            className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none"
+            aria-label="Rolar para esquerda"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button 
+            onClick={() => scroll('right')}
+            className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none"
+            aria-label="Rolar para direita"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
 
 // Componente de cartão de projeto
 const ProjectCard = ({ project, onClick }: { project: Project; onClick: () => void }) => {
   return (
-    <div className="bg-white rounded-xl shadow-md">
+    <div className="bg-white rounded-xl shadow-md overflow-hidden">
       <div className="p-4">
         <div className="flex items-center mb-3">
           <div className="w-12 h-12 bg-primary/10 rounded-full mr-3 flex items-center justify-center">
@@ -49,8 +123,8 @@ const ProjectCard = ({ project, onClick }: { project: Project; onClick: () => vo
         
         <p className="text-gray-600 mb-4 text-sm">{project.description}</p>
         
-        <div className="h-36 rounded-lg overflow-hidden mb-4">
-          <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover" />
+        <div className="mb-4">
+          <ImageGallery images={project.gallery} />
         </div>
         
         <button onClick={onClick} className="w-full py-2 bg-primary text-white rounded-lg text-sm">
@@ -61,15 +135,27 @@ const ProjectCard = ({ project, onClick }: { project: Project; onClick: () => vo
   );
 };
 
-// Visualização detalhada
+// Visualização detalhada de um projeto com galeria interativa
 const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => void }) => {
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  const nextImage = () => {
+    setActiveImageIndex((prev) => (prev + 1) % project.gallery.length);
+  };
+
+  const prevImage = () => {
+    setActiveImageIndex((prev) => 
+      prev === 0 ? project.gallery.length - 1 : prev - 1
+    );
+  };
+
   return (
     <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-3">
-      <button className="absolute top-3 right-3 text-white" onClick={onClose}>
+      <button className="absolute top-3 right-3 text-white p-2 hover:bg-white/10 rounded-full" onClick={onClose}>
         <X />
       </button>
 
-      <div className="w-full max-w-md bg-white rounded-xl shadow-2xl">
+      <div className="w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden">
         <div className="p-4">
           <div className="flex items-center mb-3">
             <div className="w-10 h-10 bg-primary/10 rounded-full mr-3 flex items-center justify-center">
@@ -80,11 +166,75 @@ const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => 
           
           <p className="text-gray-600 mb-4 text-sm">{project.description}</p>
           
-          <div className="aspect-video rounded-lg overflow-hidden mb-4">
-            <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover" />
+          {/* Exibição de imagem principal com controles */}
+          <div className="relative aspect-video mb-4 bg-gray-100 rounded-lg overflow-hidden">
+            {project.gallery.length > 0 ? (
+              <>
+                <img 
+                  src={project.gallery[activeImageIndex]} 
+                  alt={`${project.title} - Imagem ${activeImageIndex + 1}`} 
+                  className="w-full h-full object-cover"
+                />
+                
+                {project.gallery.length > 1 && (
+                  <>
+                    <button 
+                      onClick={prevImage}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                      aria-label="Imagem anterior"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+                    <button 
+                      onClick={nextImage}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                      aria-label="Próxima imagem"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                    
+                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                      {project.gallery.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setActiveImageIndex(index)}
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            index === activeImageIndex ? 'bg-white scale-125' : 'bg-white/50'
+                          }`}
+                          aria-label={`Ir para imagem ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                Sem imagens disponíveis
+              </div>
+            )}
           </div>
           
-          <button onClick={onClose} className="w-full py-2 border border-primary text-primary rounded-lg">
+          {/* Galeria de miniaturas */}
+          <div className="grid grid-cols-5 gap-2 mb-4">
+            {project.gallery.map((image, index) => (
+              <div 
+                key={index} 
+                className={`aspect-square rounded-md overflow-hidden cursor-pointer ${
+                  activeImageIndex === index ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => setActiveImageIndex(index)}
+              >
+                <img 
+                  src={image} 
+                  alt={`Miniatura ${index + 1}`} 
+                  className="w-full h-full object-cover hover:opacity-80 transition-opacity"
+                />
+              </div>
+            ))}
+          </div>
+          
+          <button onClick={onClose} className="w-full py-2 border border-primary text-primary rounded-lg hover:bg-primary/5 transition-colors">
             Fechar
           </button>
         </div>
@@ -113,12 +263,14 @@ export const ProjectGallery = () => {
         </div>
       </div>
 
-      {selectedProject && (
-        <ProjectDetail
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-        />
-      )}
+      <AnimatePresence>
+        {selectedProject && (
+          <ProjectDetail
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 };
