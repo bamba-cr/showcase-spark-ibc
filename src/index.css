@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,13 +13,13 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 240 29% 19%;
+    --primary: 270 92% 36%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 142 71% 45%;
+    --secondary: 260 100% 94%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 142 71% 45%;
+    --accent: 273 91% 65%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -55,8 +57,16 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+  
+  /* Scroll behavior */
+  html {
+    scroll-behavior: smooth;
   }
 }
 
@@ -71,9 +81,9 @@
   }
 }
 
-/* Adiciona um efeito de fade suave nas imagens */
+/* Transições suaves de imagens */
 img {
-  transition: opacity 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 img[loading] {
@@ -82,4 +92,51 @@ img[loading] {
 
 img.loaded {
   opacity: 1;
+}
+
+/* Efeitos de cartão */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(106, 13, 173, 0.2);
+}
+
+/* Gradientes animados */
+.animated-gradient {
+  background: linear-gradient(102.3deg, rgba(147,39,143,1) 5.9%, rgba(234,172,232,1) 64%, rgba(246,219,245,1) 89%);
+  background-size: 200% 200%;
+  animation: gradient-animation 6s ease infinite;
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Barra de rolagem estilizada */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6A0DAD;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4A0082;
 }

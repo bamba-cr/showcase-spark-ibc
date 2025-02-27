@@ -1,103 +1,285 @@
 
-import { useState, useRef } from "react";
-import { motion, AnimatePresence, PanInfo, useMotionValue } from "framer-motion";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight, X, ExternalLink } from "lucide-react";
 import { Project } from "@/types/Project";
 
+// Dados dos projetos
 const projects = [
   {
     id: "1",
     title: "Capoeira – Roda do Bem",
     category: "capoeira",
+    logoUrl: "https://img.icons8.com/fluency/96/capoeira.png",
     imageUrl: "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
     description: "Rodas e treinos de capoeira para desenvolvimento físico e cultural.",
     fullDescription: "Nosso projeto de capoeira visa desenvolver habilidades físicas, mentais e culturais através desta arte marcial brasileira. Com aulas regulares, eventos e apresentações, os alunos aprendem não apenas os movimentos, mas também a história e a música da capoeira.",
     gallery: [
       "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
-      "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
-      "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
+      "https://images.unsplash.com/photo-1551522435-a13afa10f103",
+      "https://images.unsplash.com/photo-1635102707010-bcf2cb3b056f",
     ]
   },
   {
     id: "2",
     title: "Futebol – Show de Bola",
     category: "futebol",
-    imageUrl: "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
+    logoUrl: "https://img.icons8.com/fluency/96/football2.png",
+    imageUrl: "https://images.unsplash.com/photo-1606925797300-0b35e9d1794e",
     description: "Partidas e campeonatos de futebol para jovens atletas.",
     fullDescription: "O projeto Show de Bola oferece treinamento profissional de futebol para jovens, desenvolvendo habilidades técnicas, trabalho em equipe e disciplina. Realizamos campeonatos internos e participamos de competições regionais.",
     gallery: [
-      "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
-      "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
-      "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
+      "https://images.unsplash.com/photo-1606925797300-0b35e9d1794e",
+      "https://images.unsplash.com/photo-1493924457718-be908a72059c",
+      "https://images.unsplash.com/photo-1494778696781-8f23fd5553c4",
     ]
   },
   {
     id: "3",
     title: "Judô – Campeões do Futuro",
     category: "judo",
+    logoUrl: "https://img.icons8.com/fluency/96/judo.png",
     imageUrl: "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
     description: "Treinamento e competições de judô para todas as idades.",
     fullDescription: "O projeto Campeões do Futuro desenvolve valores como disciplina, respeito e perseverança através do judô. Oferecemos aulas para diferentes níveis e idades, participando regularmente de competições estaduais e nacionais.",
     gallery: [
       "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
-      "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
-      "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
+      "https://images.unsplash.com/photo-1595078475328-1ab05d0a6a0e",
+      "https://images.unsplash.com/photo-1564415315949-7a0c4c73aab4",
     ]
   },
   {
     id: "4",
     title: "Música – Culturart",
     category: "musica",
-    imageUrl: "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
+    logoUrl: "https://img.icons8.com/fluency/96/musical-notes.png",
+    imageUrl: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae",
     description: "Aulas de música e apresentações culturais.",
     fullDescription: "O Culturart proporciona educação musical completa, incluindo teoria musical, prática instrumental e canto. Realizamos apresentações regulares e participamos de eventos culturais na comunidade.",
     gallery: [
-      "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
-      "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
-      "https://images.unsplash.com/photo-1469041797191-50ace28483c3",
+      "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae",
+      "https://images.unsplash.com/photo-1511379938547-c1f69419868d",
+      "https://images.unsplash.com/photo-1513883049090-d0b7439799bf",
     ]
   },
   {
     id: "5",
     title: "Informática – Conecte-se",
     category: "informatica",
+    logoUrl: "https://img.icons8.com/fluency/96/laptop-coding.png",
     imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
     description: "Cursos de tecnologia e inclusão digital.",
     fullDescription: "O projeto Conecte-se oferece cursos de informática básica, programação e design digital, preparando os participantes para o mercado de trabalho e promovendo inclusão digital.",
     gallery: [
       "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-      "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+      "https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2",
+      "https://images.unsplash.com/photo-1581091878591-4f0714c6f31f",
     ]
   },
   {
     id: "6",
     title: "Zumba em Movimento",
     category: "zumba",
-    imageUrl: "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
+    logoUrl: "https://img.icons8.com/fluency/96/exercise.png",
+    imageUrl: "https://images.unsplash.com/photo-1518611012118-696072aa579a",
     description: "Aulas de zumba e eventos fitness.",
     fullDescription: "Projeto que promove saúde e bem-estar através de aulas dinâmicas de zumba. Realizamos encontros semanais e eventos especiais, incentivando um estilo de vida ativo e saudável.",
     gallery: [
-      "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
-      "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
-      "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
+      "https://images.unsplash.com/photo-1518611012118-696072aa579a",
+      "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b",
+      "https://images.unsplash.com/photo-1518310383802-640c2de311b2",
     ]
   },
   {
     id: "7",
     title: "Reforço Escolar – Mentes Brilhantes",
     category: "educacao",
+    logoUrl: "https://img.icons8.com/fluency/96/book-shelf.png",
     imageUrl: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
     description: "Apoio educacional e acompanhamento pedagógico.",
     fullDescription: "O projeto Mentes Brilhantes oferece suporte educacional personalizado, ajudando estudantes a superarem dificuldades acadêmicas e desenvolverem métodos eficientes de estudo.",
     gallery: [
       "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
-      "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
+      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b",
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
     ]
   }
 ];
 
+// Componente de cartão de projeto
+const ProjectCard = ({ project, onClick }: { project: Project; onClick: () => void }) => {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="card-hover bg-white rounded-xl overflow-hidden shadow-md"
+    >
+      <div className="p-6">
+        <div className="flex items-center mb-4">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mr-4 shrink-0">
+            <img src={project.logoUrl} alt={project.title} className="w-10 h-10" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-800 font-heading">{project.title}</h3>
+        </div>
+        
+        <p className="text-gray-600 mb-6">{project.description}</p>
+        
+        <div className="relative h-48 rounded-lg overflow-hidden mb-4">
+          <img 
+            src={project.imageUrl} 
+            alt={project.title} 
+            className="w-full h-full object-cover transition-transform hover:scale-105"
+          />
+        </div>
+        
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          {project.gallery.slice(0, 3).map((img, idx) => (
+            <div key={idx} className="aspect-square rounded-md overflow-hidden">
+              <img 
+                src={img} 
+                alt={`${project.title} - ${idx + 1}`} 
+                className="w-full h-full object-cover transition-transform hover:scale-110"
+              />
+            </div>
+          ))}
+        </div>
+        
+        <button 
+          onClick={onClick}
+          className="w-full py-3 rounded-lg bg-primary text-white flex items-center justify-center gap-2 hover:bg-primary-dark transition-colors"
+        >
+          Ver Mais <ExternalLink size={16} />
+        </button>
+      </div>
+    </motion.div>
+  );
+};
+
+// Componente de visualização detalhada
+const ProjectDetail = ({ 
+  project, 
+  onClose, 
+  currentImageIndex,
+  setCurrentImageIndex 
+}: { 
+  project: Project; 
+  onClose: () => void;
+  currentImageIndex: number;
+  setCurrentImageIndex: (index: number) => void;
+}) => {
+  const nextImage = () => {
+    setCurrentImageIndex((currentImageIndex + 1) % project.gallery.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex(
+      currentImageIndex === 0 ? project.gallery.length - 1 : currentImageIndex - 1
+    );
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 md:p-8"
+    >
+      <button
+        className="absolute top-4 right-4 text-white z-10 p-2 hover:bg-white/10 rounded-full transition-colors"
+        onClick={onClose}
+      >
+        <X className="w-8 h-8" />
+      </button>
+
+      <div className="w-full max-w-5xl bg-white rounded-xl overflow-hidden shadow-2xl">
+        <div className="flex flex-col md:flex-row">
+          <div className="w-full md:w-1/2 bg-black relative">
+            <div className="relative aspect-video md:aspect-auto md:h-full">
+              <img
+                src={project.gallery[currentImageIndex]}
+                alt={`${project.title} - Image ${currentImageIndex + 1}`}
+                className="w-full h-full object-cover"
+              />
+              
+              <button
+                className="absolute left-2 top-1/2 -translate-y-1/2 text-white z-10 p-2 bg-black/40 hover:bg-black/60 rounded-full transition-colors"
+                onClick={prevImage}
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+
+              <button
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-white z-10 p-2 bg-black/40 hover:bg-black/60 rounded-full transition-colors"
+                onClick={nextImage}
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                {project.gallery.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      currentImageIndex === index ? "bg-white" : "bg-white/30"
+                    }`}
+                    onClick={() => setCurrentImageIndex(index)}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <div className="w-full md:w-1/2 p-6 md:p-8">
+            <div className="flex items-center mb-4">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-3 shrink-0">
+                <img src={project.logoUrl} alt={project.title} className="w-8 h-8" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 font-heading">{project.title}</h2>
+            </div>
+            
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              {project.fullDescription || project.description}
+            </p>
+            
+            <div className="border-t border-gray-200 pt-4">
+              <h3 className="text-lg font-semibold mb-3 text-gray-800">Galeria de Imagens</h3>
+              <div className="grid grid-cols-3 gap-2">
+                {project.gallery.map((img, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`aspect-square rounded-md overflow-hidden cursor-pointer ${
+                      currentImageIndex === idx ? 'ring-2 ring-primary' : ''
+                    }`}
+                    onClick={() => setCurrentImageIndex(idx)}
+                  >
+                    <img 
+                      src={img} 
+                      alt={`${project.title} - ${idx + 1}`} 
+                      className="w-full h-full object-cover hover:scale-110 transition-transform"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="mt-6">
+              <button 
+                onClick={onClose}
+                className="w-full py-3 rounded-lg border border-primary text-primary hover:bg-primary hover:text-white transition-colors"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Componente principal de galeria de projetos
 export const ProjectGallery = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -108,166 +290,80 @@ export const ProjectGallery = () => {
     ? projects.filter((project) => project.category === selectedCategory)
     : projects;
 
-  // Para funcionalidade de arrastar
-  const dragX = useMotionValue(0);
-  const dragConstraintsRef = useRef(null);
-
-  const handleDragEnd = (e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (!selectedProject) return;
-    
-    const threshold = 100; // Pixels necessários para mudar de imagem
-    const velocity = 500; // Velocidade mínima para mudar de imagem
-    
-    if (info.velocity.x > velocity || info.offset.x > threshold) {
-      // Arrasto para a direita - imagem anterior
-      setCurrentImageIndex((prev) => 
-        prev === 0 ? selectedProject.gallery.length - 1 : prev - 1
-      );
-    } else if (info.velocity.x < -velocity || info.offset.x < -threshold) {
-      // Arrasto para a esquerda - próxima imagem
-      setCurrentImageIndex((prev) => 
-        prev === selectedProject.gallery.length - 1 ? 0 : prev + 1
-      );
-    }
+  const selectProject = (project: Project) => {
+    setSelectedProject(project);
+    setCurrentImageIndex(0);
   };
 
   return (
-    <div className="min-h-screen bg-black py-20">
-      <div className="container mx-auto px-4 mb-12">
-        <div className="flex flex-wrap gap-4 justify-center">
-          <button
-            className={`px-6 py-2 rounded-full text-sm transition-all ${
-              !selectedCategory
-                ? "bg-white text-black"
-                : "bg-white/10 text-white hover:bg-white/20"
-            }`}
-            onClick={() => setSelectedCategory(null)}
-          >
-            Todos
-          </button>
-          {categories.map((category) => (
-            <button
-              key={category}
-              className={`px-6 py-2 rounded-full text-sm transition-all ${
-                selectedCategory === category
-                  ? "bg-white text-black"
-                  : "bg-white/10 text-white hover:bg-white/20"
-              }`}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category.charAt(0).toUpperCase() + category.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
-
+    <section id="projects" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
-          {filteredProjects.map((project) => (
-            <motion.div
-              layout
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              key={project.id}
-              className="relative aspect-square group cursor-pointer"
-              onClick={() => setSelectedProject(project)}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-heading">
+            Nossos Projetos
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Conheça as iniciativas que estão transformando vidas através do esporte e da educação.
+          </p>
+        </motion.div>
+
+        {/* Filtro de categorias */}
+        <div className="mb-12">
+          <div className="flex flex-wrap gap-2 md:gap-4 justify-center">
+            <button
+              className={`px-6 py-2 rounded-full text-sm transition-all ${
+                !selectedCategory
+                  ? "bg-primary text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+              onClick={() => setSelectedCategory(null)}
             >
-              <img
-                src={project.imageUrl}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="text-white text-xl font-bold mb-2">
-                    {project.title}
-                  </h3>
-                  <p className="text-white/80 text-sm">
-                    {project.description}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
+              Todos
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category}
+                className={`px-6 py-2 rounded-full text-sm transition-all ${
+                  selectedCategory === category
+                    ? "bg-primary text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category.charAt(0).toUpperCase() + category.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Grid de projetos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {filteredProjects.map((project) => (
+            <ProjectCard 
+              key={project.id} 
+              project={project} 
+              onClick={() => selectProject(project)}
+            />
           ))}
         </div>
       </div>
 
+      {/* Modal de projeto */}
       <AnimatePresence>
         {selectedProject && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black z-50 flex items-center"
-          >
-            <button
-              className="absolute top-4 right-4 text-white z-10 p-2 hover:bg-white/10 rounded-full transition-colors"
-              onClick={() => setSelectedProject(null)}
-            >
-              <X className="w-8 h-8" />
-            </button>
-
-            <button
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-white z-10 p-2 hover:bg-white/10 rounded-full transition-colors"
-              onClick={() => setCurrentImageIndex((prev) => 
-                prev === 0 ? selectedProject.gallery.length - 1 : prev - 1
-              )}
-            >
-              <ChevronLeft className="w-8 h-8" />
-            </button>
-
-            <div className="w-full h-full flex items-center justify-center p-4" ref={dragConstraintsRef}>
-              <motion.div
-                drag="x"
-                dragConstraints={dragConstraintsRef}
-                dragElastic={0.2}
-                dragMomentum={true}
-                style={{ x: dragX }}
-                onDragEnd={handleDragEnd}
-                className="w-full h-full flex items-center justify-center"
-              >
-                <img
-                  src={selectedProject.gallery[currentImageIndex]}
-                  alt={`${selectedProject.title} - Image ${currentImageIndex + 1}`}
-                  className="max-h-[90vh] w-auto object-contain"
-                  draggable="false"
-                />
-              </motion.div>
-            </div>
-
-            <button
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white z-10 p-2 hover:bg-white/10 rounded-full transition-colors"
-              onClick={() => setCurrentImageIndex((prev) => 
-                prev === selectedProject.gallery.length - 1 ? 0 : prev + 1
-              )}
-            >
-              <ChevronRight className="w-8 h-8" />
-            </button>
-
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-              {selectedProject.gallery.map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    currentImageIndex === index ? "bg-white" : "bg-white/30"
-                  }`}
-                  onClick={() => setCurrentImageIndex(index)}
-                />
-              ))}
-            </div>
-
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-              <h2 className="text-white text-2xl font-bold mb-2">
-                {selectedProject.title}
-              </h2>
-              <p className="text-white/80">
-                {selectedProject.fullDescription || selectedProject.description}
-              </p>
-            </div>
-          </motion.div>
+          <ProjectDetail
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
+            currentImageIndex={currentImageIndex}
+            setCurrentImageIndex={setCurrentImageIndex}
+          />
         )}
       </AnimatePresence>
-    </div>
+    </section>
   );
 };
