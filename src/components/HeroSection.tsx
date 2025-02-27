@@ -23,7 +23,7 @@ export const HeroSection = () => {
             alt="Hero Background"
             className="w-full h-full object-cover"
           />
-        </div>
+        </video>
       </div>
       
       {/* Conteúdo centralizado */}
