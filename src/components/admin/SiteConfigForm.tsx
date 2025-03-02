@@ -1,3 +1,4 @@
+
 import React from "react";
 import { SiteConfig } from "@/types/SiteConfig";
 import { Button } from "@/components/ui/button";
@@ -28,19 +29,19 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  // Define defaultValues with explicit type annotation and non-nullable values
-  const defaultValues = {
+  // Define defaultValues with explicit type declaration to ensure non-optional properties
+  const defaultValues: SiteConfig = {
     title: config.title,
     subtitle: config.subtitle,
-    featuredVideoUrl: config.featuredVideoUrl ?? "",
+    featuredVideoUrl: config.featuredVideoUrl || "",
     contactEmail: config.contactEmail,
     contactPhone: config.contactPhone,
     socialLinks: {
-      linkedin: config.socialLinks.linkedin ?? "",
-      github: config.socialLinks.github ?? "",
-      twitter: config.socialLinks.twitter ?? ""
+      linkedin: config.socialLinks.linkedin || "",
+      github: config.socialLinks.github || "",
+      twitter: config.socialLinks.twitter || ""
     }
-  } satisfies SiteConfig;
+  };
 
   const form = useForm<z.infer<typeof siteConfigSchema>>({
     resolver: zodResolver(siteConfigSchema),

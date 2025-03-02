@@ -27,16 +27,16 @@ const projectSchema = z.object({
 });
 
 export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
-  // Define defaultValues with explicit type annotation and non-nullable values
-  const defaultValues = {
-    title: project ? project.title : "",
-    category: project ? project.category : "",
-    logoUrl: project ? project.logoUrl : "https://img.icons8.com/fluency/96/puzzle.png",
-    imageUrl: project ? project.imageUrl : "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
-    description: project ? project.description : "",
-    fullDescription: project ? project.fullDescription : "",
-    video: project ? project.video ?? "" : "",
-  } satisfies Omit<Project, "id" | "gallery">;
+  // Define defaultValues with explicit type declaration to ensure non-optional properties
+  const defaultValues: Omit<Project, "id" | "gallery"> = {
+    title: project?.title || "",
+    category: project?.category || "",
+    logoUrl: project?.logoUrl || "https://img.icons8.com/fluency/96/puzzle.png",
+    imageUrl: project?.imageUrl || "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
+    description: project?.description || "",
+    fullDescription: project?.fullDescription || "",
+    video: project?.video || "",
+  };
 
   const form = useForm<z.infer<typeof projectSchema>>({
     resolver: zodResolver(projectSchema),
