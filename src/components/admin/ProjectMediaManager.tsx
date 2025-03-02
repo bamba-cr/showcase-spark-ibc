@@ -1,8 +1,8 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Project } from "@/types/Project";
-import { X, Upload, Trash2, PlusCircle, Image } from "lucide-react";
+import { X, Upload, Trash2, PlusCircle, Image, Save } from "lucide-react";
 
 type ProjectMediaManagerProps = {
   project: Project;
@@ -14,6 +14,23 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [autoSave, setAutoSave] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+  // Efeito para autosave
+  useEffect(() => {
+    // Simular autosave com um delay
+    const hasChanges = videoFile || imageFiles.length > 0;
+    
+    if (autoSave && hasChanges) {
+      const timer = setTimeout(() => {
+        handleSubmit(new Event('autoSave') as unknown as React.FormEvent);
+      }, 30000); // Autosave a cada 30 segundos
+      
+      return () => clearTimeout(timer);
+    }
+  }, [videoFile, imageFiles, autoSave]);
 
   // Handler para vídeo
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,27 +118,35 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Em uma implementação real, aqui você faria o upload dos arquivos para um servidor
-    // e atualizaria as URLs no projeto
+    setIsSaving(true);
     
-    // Simulação de upload bem-sucedido - apenas para demonstração
-    // Em uma implementação real, você precisaria usar um serviço de armazenamento
-    
-    const newGalleryItems = imagePreviews.map((preview) => preview);
-    const updatedGallery = [...project.gallery, ...newGalleryItems];
-    
-    onUpdate({
-      ...project,
-      gallery: updatedGallery,
-      video: videoFile ? URL.createObjectURL(videoFile) : project.video
-    });
-    
-    // Limpar estados após o sucesso
-    setVideoFile(null);
-    setImageFiles([]);
-    setImagePreviews([]);
-    
-    toast.success("Mídia atualizada com sucesso!");
+    // Simular um atraso de rede para fins de demonstração
+    setTimeout(() => {
+      // Em uma implementação real, aqui você faria o upload dos arquivos para um servidor
+      // e atualizaria as URLs no projeto
+      
+      const newGalleryItems = imagePreviews.map((preview) => preview);
+      const updatedGallery = [...project.gallery, ...newGalleryItems];
+      
+      onUpdate({
+        ...project,
+        gallery: updatedGallery,
+        video: videoFile ? URL.createObjectURL(videoFile) : project.video
+      });
+      
+      // Limpar estados após o sucesso
+      setVideoFile(null);
+      setImageFiles([]);
+      setImagePreviews([]);
+      setIsSaving(false);
+      setLastSaved(new Date());
+      
+      if (e.type !== 'autoSave') {
+        toast.success("Mídia atualizada com sucesso!");
+      } else {
+        toast.info("Alterações salvas automaticamente");
+      }
+    }, 1500);
   };
 
   return (
@@ -129,6 +154,27 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
       <h3 className="text-xl font-semibold text-primary mb-4">
         Gerenciar Mídia - {project.title}
       </h3>
+      
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="autosave"
+            checked={autoSave}
+            onChange={() => setAutoSave(!autoSave)}
+            className="rounded text-primary focus:ring-primary"
+          />
+          <label htmlFor="autosave" className="text-sm text-gray-600">
+            Salvar automaticamente
+          </label>
+        </div>
+        
+        {lastSaved && (
+          <p className="text-xs text-gray-500">
+            Última alteração salva: {lastSaved.toLocaleTimeString()}
+          </p>
+        )}
+      </div>
       
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Vídeo */}
@@ -285,9 +331,20 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
 
         <button
           type="submit"
-          className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary-dark transition-all"
+          className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary-dark transition-all flex items-center justify-center gap-2"
+          disabled={isSaving}
         >
-          Salvar Alterações
+          {isSaving ? (
+            <>
+              <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+              <span>Salvando...</span>
+            </>
+          ) : (
+            <>
+              <Save size={18} />
+              <span>Salvar Alterações</span>
+            </>
+          )}
         </button>
       </form>
     </div>
