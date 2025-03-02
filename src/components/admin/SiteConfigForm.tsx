@@ -1,3 +1,4 @@
+
 import React from "react";
 import { SiteConfig } from "@/types/SiteConfig";
 import { Button } from "@/components/ui/button";
@@ -28,12 +29,14 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
+  // Create non-optional defaultValues by using direct access for required fields
+  // and constructing a complete SiteConfig object
   const defaultValues: SiteConfig = {
-    title: config.title ?? "",
-    subtitle: config.subtitle ?? "",
+    title: config.title,
+    subtitle: config.subtitle,
     featuredVideoUrl: config.featuredVideoUrl ?? "",
-    contactEmail: config.contactEmail ?? "",
-    contactPhone: config.contactPhone ?? "",
+    contactEmail: config.contactEmail,
+    contactPhone: config.contactPhone,
     socialLinks: {
       linkedin: config.socialLinks?.linkedin ?? "",
       github: config.socialLinks?.github ?? "",
