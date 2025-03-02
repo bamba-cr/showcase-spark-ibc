@@ -29,7 +29,7 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  // Define defaultValues with explicit type declaration to ensure non-optional properties
+  // Create SiteConfig with explicit non-optional properties
   const defaultValues: SiteConfig = {
     title: config.title,
     subtitle: config.subtitle,

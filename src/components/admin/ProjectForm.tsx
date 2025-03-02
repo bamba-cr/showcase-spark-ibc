@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Project } from "@/types/Project";
 import { Button } from "@/components/ui/button";
@@ -27,7 +26,7 @@ const projectSchema = z.object({
 });
 
 export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
-  // Define defaultValues with explicit type declaration to ensure non-optional properties
+  // Define defaultValues with correct non-optional types
   const defaultValues: Omit<Project, "id" | "gallery"> = {
     title: project?.title || "",
     category: project?.category || "",
@@ -35,6 +34,7 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
     imageUrl: project?.imageUrl || "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
     description: project?.description || "",
     fullDescription: project?.fullDescription || "",
+    // Since video is optional in Project type, we can use empty string as a default
     video: project?.video || "",
   };
 
