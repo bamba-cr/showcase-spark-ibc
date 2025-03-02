@@ -28,7 +28,8 @@ const projectSchema = z.object({
 
 export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
   // Create a defaultValues object with all required fields explicitly defined
-  const defaultValues = {
+  // Use type assertion to tell TypeScript this matches the required type
+  const defaultValues: Omit<Project, "id" | "gallery"> = {
     title: project?.title || "",
     category: project?.category || "",
     logoUrl: project?.logoUrl || "https://img.icons8.com/fluency/96/puzzle.png",
@@ -38,7 +39,6 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
     video: project?.video || "",
   };
 
-  // TypeScript now knows these are not optional
   const form = useForm<z.infer<typeof projectSchema>>({
     resolver: zodResolver(projectSchema),
     defaultValues,

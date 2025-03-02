@@ -29,9 +29,9 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  // Create defaultValues with explicit non-optional properties
-  // Ensure socialLinks is always an object with defined properties
-  const defaultValues = {
+  // Create defaultValues with explicitly typed non-optional properties
+  // Use type assertion to tell TypeScript this matches SiteConfig type
+  const defaultValues: SiteConfig = {
     title: config.title,
     subtitle: config.subtitle,
     featuredVideoUrl: config.featuredVideoUrl || "",
