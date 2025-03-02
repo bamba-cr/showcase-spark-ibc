@@ -1,4 +1,3 @@
-
 import React from "react";
 import { SiteConfig } from "@/types/SiteConfig";
 import { Button } from "@/components/ui/button";
@@ -29,20 +28,19 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  // Create non-optional defaultValues by using direct access for required fields
-  // and constructing a complete SiteConfig object
-  const defaultValues: SiteConfig = {
+  // Define defaultValues with explicit type annotation and non-nullable values
+  const defaultValues = {
     title: config.title,
     subtitle: config.subtitle,
     featuredVideoUrl: config.featuredVideoUrl ?? "",
     contactEmail: config.contactEmail,
     contactPhone: config.contactPhone,
     socialLinks: {
-      linkedin: config.socialLinks?.linkedin ?? "",
-      github: config.socialLinks?.github ?? "",
-      twitter: config.socialLinks?.twitter ?? ""
+      linkedin: config.socialLinks.linkedin ?? "",
+      github: config.socialLinks.github ?? "",
+      twitter: config.socialLinks.twitter ?? ""
     }
-  };
+  } satisfies SiteConfig;
 
   const form = useForm<z.infer<typeof siteConfigSchema>>({
     resolver: zodResolver(siteConfigSchema),

@@ -27,8 +27,8 @@ const projectSchema = z.object({
 });
 
 export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
-  // Create non-optional defaultValues by using non-null assertions for required fields
-  const defaultValues: Omit<Project, "id" | "gallery"> = {
+  // Define defaultValues with explicit type annotation and non-nullable values
+  const defaultValues = {
     title: project ? project.title : "",
     category: project ? project.category : "",
     logoUrl: project ? project.logoUrl : "https://img.icons8.com/fluency/96/puzzle.png",
@@ -36,7 +36,7 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
     description: project ? project.description : "",
     fullDescription: project ? project.fullDescription : "",
     video: project ? project.video ?? "" : "",
-  };
+  } satisfies Omit<Project, "id" | "gallery">;
 
   const form = useForm<z.infer<typeof projectSchema>>({
     resolver: zodResolver(projectSchema),
