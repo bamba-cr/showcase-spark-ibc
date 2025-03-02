@@ -3,11 +3,29 @@ import React, { useState } from "react";
 import { ProjectMediaManager } from "@/components/admin/ProjectMediaManager";
 import { ProjectList } from "@/components/admin/ProjectList";
 import { ProjectForm } from "@/components/admin/ProjectForm";
+import { SiteConfigForm } from "@/components/admin/SiteConfigForm";
 import { Project } from "@/types/Project";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { SiteConfig } from "@/types/SiteConfig";
 
 const Admin = () => {
+  // Site configuration state
+  const [siteConfig, setSiteConfig] = useState<SiteConfig>({
+    title: "Meu Portfólio Profissional",
+    subtitle: "Desenvolvedor Web & Designer",
+    featuredVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    contactEmail: "contato@exemplo.com",
+    contactPhone: "+55 11 12345-6789",
+    socialLinks: {
+      linkedin: "https://linkedin.com/in/exemplo",
+      github: "https://github.com/exemplo",
+      twitter: "https://twitter.com/exemplo"
+    }
+  });
+
   const [projects, setProjects] = useState<Project[]>([
     {
       id: "project-1",
@@ -37,7 +55,7 @@ const Admin = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   // Handler para criar um novo projeto
-  const handleCreateProject = (newProject: Omit<Project, "id">) => {
+  const handleCreateProject = (newProject: Omit<Project, "id" | "gallery">) => {
     const projectWithId = {
       ...newProject,
       id: `project-${Date.now()}`,
@@ -68,41 +86,64 @@ const Admin = () => {
     setSelectedProject(project);
   };
 
+  // Handler para reordenar projetos
+  const handleReorderProjects = (reorderedProjects: Project[]) => {
+    setProjects(reorderedProjects);
+    toast.success("Ordem dos projetos atualizada com sucesso!");
+  };
+
+  // Handler para atualizar a configuração do site
+  const handleUpdateSiteConfig = (newConfig: SiteConfig) => {
+    setSiteConfig(newConfig);
+    toast.success("Configurações do site atualizadas com sucesso!");
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Painel Administrativo</h1>
-      
-      <Tabs defaultValue="projects" className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="projects">Projetos</TabsTrigger>
-          <TabsTrigger value="new">Novo Projeto</TabsTrigger>
-          {selectedProject && (
-            <TabsTrigger value="media">Gerenciar Mídia</TabsTrigger>
-          )}
-        </TabsList>
+    <DndProvider backend={HTML5Backend}>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-6">Painel Administrativo</h1>
         
-        <TabsContent value="projects" className="space-y-6">
-          <ProjectList 
-            projects={projects} 
-            onSelect={handleSelectProject} 
-            onDelete={handleDeleteProject}
-          />
-        </TabsContent>
-        
-        <TabsContent value="new">
-          <ProjectForm onSubmit={handleCreateProject} />
-        </TabsContent>
-        
-        <TabsContent value="media">
-          {selectedProject && (
-            <ProjectMediaManager 
-              project={selectedProject} 
-              onUpdate={handleUpdateProject} 
+        <Tabs defaultValue="projects" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="config">Configurações do Site</TabsTrigger>
+            <TabsTrigger value="projects">Projetos</TabsTrigger>
+            <TabsTrigger value="new">Novo Projeto</TabsTrigger>
+            {selectedProject && (
+              <TabsTrigger value="media">Gerenciar Mídia</TabsTrigger>
+            )}
+          </TabsList>
+          
+          <TabsContent value="config" className="space-y-6">
+            <SiteConfigForm 
+              config={siteConfig}
+              onSubmit={handleUpdateSiteConfig}
             />
-          )}
-        </TabsContent>
-      </Tabs>
-    </div>
+          </TabsContent>
+          
+          <TabsContent value="projects" className="space-y-6">
+            <ProjectList 
+              projects={projects} 
+              onSelect={handleSelectProject} 
+              onDelete={handleDeleteProject}
+              onReorder={handleReorderProjects}
+            />
+          </TabsContent>
+          
+          <TabsContent value="new">
+            <ProjectForm onSubmit={handleCreateProject} />
+          </TabsContent>
+          
+          <TabsContent value="media">
+            {selectedProject && (
+              <ProjectMediaManager 
+                project={selectedProject} 
+                onUpdate={handleUpdateProject} 
+              />
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </DndProvider>
   );
 };
 
