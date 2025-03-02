@@ -29,8 +29,8 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  // Create SiteConfig with explicit non-optional properties, using nullish coalescing
-  const defaultValues: SiteConfig = {
+  // Create SiteConfig using explicit type assertion
+  const defaultValues = {
     title: config?.title ?? "",
     subtitle: config?.subtitle ?? "",
     featuredVideoUrl: config?.featuredVideoUrl ?? "",
@@ -41,7 +41,7 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
       github: config?.socialLinks?.github ?? "",
       twitter: config?.socialLinks?.twitter ?? ""
     }
-  };
+  } as SiteConfig;
 
   const form = useForm<z.infer<typeof siteConfigSchema>>({
     resolver: zodResolver(siteConfigSchema),
