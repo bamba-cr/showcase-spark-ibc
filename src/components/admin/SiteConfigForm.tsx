@@ -1,4 +1,3 @@
-
 import React from "react";
 import { SiteConfig } from "@/types/SiteConfig";
 import { Button } from "@/components/ui/button";
@@ -29,9 +28,7 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  // Use nullish coalescing to ensure all values are non-optional
-  // Then use the satisfies operator to tell TypeScript this matches SiteConfig
-  const defaultValues = {
+  const defaultValues: SiteConfig = {
     title: config.title ?? "",
     subtitle: config.subtitle ?? "",
     featuredVideoUrl: config.featuredVideoUrl ?? "",
@@ -42,7 +39,7 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
       github: config.socialLinks?.github ?? "",
       twitter: config.socialLinks?.twitter ?? ""
     }
-  } satisfies SiteConfig;
+  };
 
   const form = useForm<z.infer<typeof siteConfigSchema>>({
     resolver: zodResolver(siteConfigSchema),

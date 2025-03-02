@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Project } from "@/types/Project";
 import { Button } from "@/components/ui/button";
@@ -27,8 +26,8 @@ const projectSchema = z.object({
 });
 
 export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
-  // Set default values directly without conditionals to avoid TypeScript inferring optional types
-  const defaultValues = {
+  // Explicitly type defaultValues and use non-optional assignments
+  const defaultValues: Omit<Project, "id" | "gallery"> = {
     title: project?.title ?? "",
     category: project?.category ?? "",
     logoUrl: project?.logoUrl ?? "https://img.icons8.com/fluency/96/puzzle.png",
@@ -36,7 +35,7 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
     description: project?.description ?? "",
     fullDescription: project?.fullDescription ?? "",
     video: project?.video ?? "",
-  } satisfies Omit<Project, "id" | "gallery">;
+  };
 
   const form = useForm<z.infer<typeof projectSchema>>({
     resolver: zodResolver(projectSchema),
