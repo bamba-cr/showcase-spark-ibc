@@ -3,49 +3,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Project } from "@/types/Project";
-
-// Dados dos projetos simplificados
-const projects = [
-  {
-    id: "1",
-    title: "Capoeira",
-    category: "esporte",
-    logoUrl: "https://img.icons8.com/fluency/96/capoeira.png",
-    imageUrl: "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
-    description: "Treinos de capoeira.",
-    gallery: [
-      "https://images.unsplash.com/photo-1517022812141-23620dba5c23",
-      "https://images.unsplash.com/photo-1551522435-a13afa10f103",
-      "https://images.unsplash.com/photo-1635102707010-bcf2cb3b056f"
-    ]
-  },
-  {
-    id: "2",
-    title: "Futebol",
-    category: "esporte",
-    logoUrl: "https://img.icons8.com/fluency/96/football2.png",
-    imageUrl: "https://images.unsplash.com/photo-1606925797300-0b35e9d1794e",
-    description: "Partidas de futebol.",
-    gallery: [
-      "https://images.unsplash.com/photo-1606925797300-0b35e9d1794e",
-      "https://images.unsplash.com/photo-1493924457718-be908a72059c",
-      "https://images.unsplash.com/photo-1494778696781-8f23fd5553c4"
-    ]
-  },
-  {
-    id: "3",
-    title: "Música",
-    category: "cultura",
-    logoUrl: "https://img.icons8.com/fluency/96/musical-notes.png",
-    imageUrl: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae",
-    description: "Aulas de música.",
-    gallery: [
-      "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae",
-      "https://images.unsplash.com/photo-1511379938547-c1f69419868d",
-      "https://images.unsplash.com/photo-1513883049090-d0b7439799bf"
-    ]
-  }
-];
+import { useQuery } from "@tanstack/react-query";
 
 // Componente de galeria de imagens com rolagem moderna
 const ImageGallery = ({ images }: { images: string[] }) => {
@@ -243,24 +201,79 @@ const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => 
   );
 };
 
+// Função para buscar os projetos do Admin
+const fetchProjects = (): Promise<Project[]> => {
+  // Aqui poderia ser uma chamada API real
+  // Por enquanto vamos retornar os mesmos projetos do Admin
+  return new Promise((resolve) => {
+    const adminProjects = [
+      {
+        id: "project-1",
+        title: "Projeto de Demonstração",
+        category: "demo",
+        logoUrl: "https://img.icons8.com/fluency/96/puzzle.png",
+        imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
+        description: "Este é um projeto de demonstração para testes.",
+        fullDescription: "Descrição completa do projeto de demonstração para fins de teste e visualização no painel administrativo.",
+        gallery: [
+          "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+          "https://images.unsplash.com/photo-1461749280684-dccba630e2f6"
+        ],
+      },
+      {
+        id: "project-2",
+        title: "Website Corporativo",
+        category: "web",
+        logoUrl: "https://img.icons8.com/fluency/96/domain.png",
+        imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+        description: "Website responsivo para empresa de tecnologia.",
+        fullDescription: "Website moderno e responsivo desenvolvido para uma empresa de tecnologia, com design clean e funcionalidades avançadas.",
+        gallery: [],
+      }
+    ];
+    resolve(adminProjects);
+  });
+};
+
 // Componente principal
 export const ProjectGallery = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  // Usar react-query para buscar os projetos
+  const { data: projects = [], isLoading, error } = useQuery({
+    queryKey: ['projects'],
+    queryFn: fetchProjects,
+  });
 
   return (
     <section id="projects" className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-8">Projetos</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projects.map((project) => (
-            <ProjectCard 
-              key={project.id} 
-              project={project} 
-              onClick={() => setSelectedProject(project)}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+            <p className="mt-2 text-gray-600">Carregando projetos...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12 text-red-500">
+            Erro ao carregar os projetos. Por favor, tente novamente.
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            Nenhum projeto encontrado.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {projects.map((project) => (
+              <ProjectCard 
+                key={project.id} 
+                project={project} 
+                onClick={() => setSelectedProject(project)}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <AnimatePresence>

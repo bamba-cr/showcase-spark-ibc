@@ -1,14 +1,13 @@
-
 import React from "react";
-import { SiteConfig } from "@/types/SiteConfig";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SiteConfig } from "@/types/SiteConfig";
 
 type SiteConfigFormProps = {
   config: SiteConfig;
@@ -23,19 +22,19 @@ const siteConfigSchema = z.object({
   contactPhone: z.string().min(10, { message: "Telefone inválido" }),
   socialLinks: z.object({
     linkedin: z.string().url({ message: "URL do LinkedIn inválida" }).optional().or(z.literal("")),
-    github: z.string().url({ message: "URL do GitHub inválida" }).optional().or(z.literal("")),
+    github: z.string().url({ message: "URL do Github inválida" }).optional().or(z.literal("")),
     twitter: z.string().url({ message: "URL do Twitter inválida" }).optional().or(z.literal(""))
   })
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  // Create a properly typed defaultValues object with all required properties
+  // Cria um objeto com valores padrão garantindo que todas as propriedades sejam não-opcionais
   const defaultValues: SiteConfig = {
-    title: config.title || "",
-    subtitle: config.subtitle || "",
+    title: config.title,
+    subtitle: config.subtitle,
     featuredVideoUrl: config.featuredVideoUrl || "",
-    contactEmail: config.contactEmail || "",
-    contactPhone: config.contactPhone || "",
+    contactEmail: config.contactEmail,
+    contactPhone: config.contactPhone,
     socialLinks: {
       linkedin: config.socialLinks?.linkedin || "",
       github: config.socialLinks?.github || "",
