@@ -1,3 +1,4 @@
+
 import React from "react";
 import { SiteConfig } from "@/types/SiteConfig";
 import { Button } from "@/components/ui/button";
@@ -28,20 +29,20 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  // Create defaultValues with explicitly defined non-optional properties
-  // Use direct property access with fallback values instead of optional chaining
-  const defaultValues: SiteConfig = {
-    title: config.title,
-    subtitle: config.subtitle,
-    featuredVideoUrl: config.featuredVideoUrl || "",
-    contactEmail: config.contactEmail,
-    contactPhone: config.contactPhone,
+  // Use nullish coalescing to ensure all values are non-optional
+  // Then use the satisfies operator to tell TypeScript this matches SiteConfig
+  const defaultValues = {
+    title: config.title ?? "",
+    subtitle: config.subtitle ?? "",
+    featuredVideoUrl: config.featuredVideoUrl ?? "",
+    contactEmail: config.contactEmail ?? "",
+    contactPhone: config.contactPhone ?? "",
     socialLinks: {
-      linkedin: config.socialLinks.linkedin || "",
-      github: config.socialLinks.github || "",
-      twitter: config.socialLinks.twitter || ""
+      linkedin: config.socialLinks?.linkedin ?? "",
+      github: config.socialLinks?.github ?? "",
+      twitter: config.socialLinks?.twitter ?? ""
     }
-  };
+  } satisfies SiteConfig;
 
   const form = useForm<z.infer<typeof siteConfigSchema>>({
     resolver: zodResolver(siteConfigSchema),
