@@ -27,14 +27,15 @@ const projectSchema = z.object({
 });
 
 export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
-  const defaultValues = project || {
-    title: "",
-    category: "",
-    logoUrl: "https://img.icons8.com/fluency/96/puzzle.png",
-    imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
-    description: "",
-    fullDescription: "",
-    video: "",
+  // Define default values with all required fields
+  const defaultValues: Omit<Project, "id" | "gallery"> = {
+    title: project?.title || "",
+    category: project?.category || "",
+    logoUrl: project?.logoUrl || "https://img.icons8.com/fluency/96/puzzle.png",
+    imageUrl: project?.imageUrl || "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
+    description: project?.description || "",
+    fullDescription: project?.fullDescription || "",
+    video: project?.video || "",
   };
 
   const form = useForm<z.infer<typeof projectSchema>>({
