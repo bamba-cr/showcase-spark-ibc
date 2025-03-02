@@ -1,4 +1,3 @@
-
 import React from "react";
 import { SiteConfig } from "@/types/SiteConfig";
 import { Button } from "@/components/ui/button";
@@ -29,8 +28,8 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  // Create defaultValues with explicitly typed non-optional properties
-  // Use type assertion to tell TypeScript this matches SiteConfig type
+  // Create defaultValues with explicitly defined non-optional properties
+  // Use direct property access with fallback values instead of optional chaining
   const defaultValues: SiteConfig = {
     title: config.title,
     subtitle: config.subtitle,
@@ -38,9 +37,9 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
     contactEmail: config.contactEmail,
     contactPhone: config.contactPhone,
     socialLinks: {
-      linkedin: config.socialLinks?.linkedin || "",
-      github: config.socialLinks?.github || "",
-      twitter: config.socialLinks?.twitter || ""
+      linkedin: config.socialLinks.linkedin || "",
+      github: config.socialLinks.github || "",
+      twitter: config.socialLinks.twitter || ""
     }
   };
 

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Project } from "@/types/Project";
 import { Button } from "@/components/ui/button";
@@ -27,16 +26,15 @@ const projectSchema = z.object({
 });
 
 export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
-  // Create a defaultValues object with all required fields explicitly defined
-  // Use type assertion to tell TypeScript this matches the required type
+  // Create definite values without using optional chaining to avoid TypeScript inferring optional types
   const defaultValues: Omit<Project, "id" | "gallery"> = {
-    title: project?.title || "",
-    category: project?.category || "",
-    logoUrl: project?.logoUrl || "https://img.icons8.com/fluency/96/puzzle.png",
-    imageUrl: project?.imageUrl || "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
-    description: project?.description || "",
-    fullDescription: project?.fullDescription || "",
-    video: project?.video || "",
+    title: project ? project.title : "",
+    category: project ? project.category : "",
+    logoUrl: project ? project.logoUrl : "https://img.icons8.com/fluency/96/puzzle.png",
+    imageUrl: project ? project.imageUrl : "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
+    description: project ? project.description : "",
+    fullDescription: project ? project.fullDescription || "" : "",
+    video: project ? project.video || "" : "",
   };
 
   const form = useForm<z.infer<typeof projectSchema>>({
