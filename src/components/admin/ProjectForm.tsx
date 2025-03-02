@@ -27,16 +27,16 @@ const projectSchema = z.object({
 });
 
 export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
-  // Define non-optional defaultValues with required type assertion
-  const defaultValues = {
-    title: project?.title ?? "",
-    category: project?.category ?? "",
-    logoUrl: project?.logoUrl ?? "https://img.icons8.com/fluency/96/puzzle.png",
-    imageUrl: project?.imageUrl ?? "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
-    description: project?.description ?? "",
-    fullDescription: project?.fullDescription ?? "",
-    video: project?.video ?? "",
-  } as Omit<Project, "id" | "gallery">;
+  // Create a properly typed defaultValues object with all required properties
+  const defaultValues: Omit<Project, "id" | "gallery"> = {
+    title: project?.title || "",
+    category: project?.category || "",
+    logoUrl: project?.logoUrl || "https://img.icons8.com/fluency/96/puzzle.png",
+    imageUrl: project?.imageUrl || "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
+    description: project?.description || "",
+    fullDescription: project?.fullDescription || "",
+    video: project?.video || "",
+  };
 
   const form = useForm<z.infer<typeof projectSchema>>({
     resolver: zodResolver(projectSchema),

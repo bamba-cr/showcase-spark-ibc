@@ -29,19 +29,19 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  // Create SiteConfig using explicit type assertion
-  const defaultValues = {
-    title: config?.title ?? "",
-    subtitle: config?.subtitle ?? "",
-    featuredVideoUrl: config?.featuredVideoUrl ?? "",
-    contactEmail: config?.contactEmail ?? "",
-    contactPhone: config?.contactPhone ?? "",
+  // Create a properly typed defaultValues object with all required properties
+  const defaultValues: SiteConfig = {
+    title: config.title || "",
+    subtitle: config.subtitle || "",
+    featuredVideoUrl: config.featuredVideoUrl || "",
+    contactEmail: config.contactEmail || "",
+    contactPhone: config.contactPhone || "",
     socialLinks: {
-      linkedin: config?.socialLinks?.linkedin ?? "",
-      github: config?.socialLinks?.github ?? "",
-      twitter: config?.socialLinks?.twitter ?? ""
+      linkedin: config.socialLinks?.linkedin || "",
+      github: config.socialLinks?.github || "",
+      twitter: config.socialLinks?.twitter || ""
     }
-  } as SiteConfig;
+  };
 
   const form = useForm<z.infer<typeof siteConfigSchema>>({
     resolver: zodResolver(siteConfigSchema),
