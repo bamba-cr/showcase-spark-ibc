@@ -27,7 +27,7 @@ const projectSchema = z.object({
 });
 
 export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
-  // Cria um objeto com valores padrão garantindo que todas as propriedades sejam não-opcionais
+  // Create an object with default values ensuring all properties are non-optional
   const defaultValues: Omit<Project, "id" | "gallery"> = {
     title: project?.title || "",
     category: project?.category || "",

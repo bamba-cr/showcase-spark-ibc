@@ -53,20 +53,26 @@ const Admin = () => {
   ]);
   
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [activeTab, setActiveTab] = useState("projects");
 
-  // Handler para criar um novo projeto
+  // Handler to create a new project
   const handleCreateProject = (newProject: Omit<Project, "id" | "gallery">) => {
-    const projectWithId = {
+    // Create a unique ID for the new project
+    const projectId = `project-${Date.now()}`;
+    
+    const projectWithId: Project = {
       ...newProject,
-      id: `project-${Date.now()}`,
+      id: projectId,
       gallery: [],
     };
     
     setProjects([...projects, projectWithId]);
     toast.success("Projeto criado com sucesso!");
+    // Switch to the projects tab after creation
+    setActiveTab("projects");
   };
 
-  // Handler para atualizar um projeto
+  // Handler to update a project
   const handleUpdateProject = (updatedProject: Project) => {
     setProjects(projects.map(project => 
       project.id === updatedProject.id ? updatedProject : project
@@ -74,25 +80,26 @@ const Admin = () => {
     toast.success("Projeto atualizado com sucesso!");
   };
 
-  // Handler para remover um projeto
+  // Handler to remove a project
   const handleDeleteProject = (projectId: string) => {
     setProjects(projects.filter(project => project.id !== projectId));
     setSelectedProject(null);
     toast.success("Projeto removido com sucesso!");
   };
 
-  // Handler para selecionar um projeto para edição
+  // Handler to select a project for editing
   const handleSelectProject = (project: Project) => {
     setSelectedProject(project);
+    setActiveTab("media");
   };
 
-  // Handler para reordenar projetos
+  // Handler to reorder projects
   const handleReorderProjects = (reorderedProjects: Project[]) => {
     setProjects(reorderedProjects);
     toast.success("Ordem dos projetos atualizada com sucesso!");
   };
 
-  // Handler para atualizar a configuração do site
+  // Handler to update the site configuration
   const handleUpdateSiteConfig = (newConfig: SiteConfig) => {
     setSiteConfig(newConfig);
     toast.success("Configurações do site atualizadas com sucesso!");
@@ -103,7 +110,7 @@ const Admin = () => {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6">Painel Administrativo</h1>
         
-        <Tabs defaultValue="projects" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="config">Configurações do Site</TabsTrigger>
             <TabsTrigger value="projects">Projetos</TabsTrigger>
