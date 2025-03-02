@@ -29,17 +29,17 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  // Create SiteConfig with explicit non-optional properties
+  // Create SiteConfig with explicit non-optional properties, using nullish coalescing
   const defaultValues: SiteConfig = {
-    title: config.title,
-    subtitle: config.subtitle,
-    featuredVideoUrl: config.featuredVideoUrl || "",
-    contactEmail: config.contactEmail,
-    contactPhone: config.contactPhone,
+    title: config?.title ?? "",
+    subtitle: config?.subtitle ?? "",
+    featuredVideoUrl: config?.featuredVideoUrl ?? "",
+    contactEmail: config?.contactEmail ?? "",
+    contactPhone: config?.contactPhone ?? "",
     socialLinks: {
-      linkedin: config.socialLinks.linkedin || "",
-      github: config.socialLinks.github || "",
-      twitter: config.socialLinks.twitter || ""
+      linkedin: config?.socialLinks?.linkedin ?? "",
+      github: config?.socialLinks?.github ?? "",
+      twitter: config?.socialLinks?.twitter ?? ""
     }
   };
 
