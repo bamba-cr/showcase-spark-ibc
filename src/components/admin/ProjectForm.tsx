@@ -28,7 +28,7 @@ const projectSchema = z.object({
 
 export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
   // Create an object with default values ensuring all properties are non-optional
-  const defaultValues: Omit<Project, "id" | "gallery"> = {
+  const defaultValues = {
     title: project?.title || "",
     category: project?.category || "",
     logoUrl: project?.logoUrl || "https://img.icons8.com/fluency/96/puzzle.png",
@@ -44,7 +44,18 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
   });
 
   const handleSubmit = (data: z.infer<typeof projectSchema>) => {
-    onSubmit(data);
+    // Ensure all required fields are present by creating a new object
+    const projectData: Omit<Project, "id" | "gallery"> = {
+      title: data.title,
+      category: data.category,
+      logoUrl: data.logoUrl,
+      imageUrl: data.imageUrl,
+      description: data.description,
+      fullDescription: data.fullDescription,
+      video: data.video,
+    };
+    
+    onSubmit(projectData);
     if (!project) {
       form.reset();
     }

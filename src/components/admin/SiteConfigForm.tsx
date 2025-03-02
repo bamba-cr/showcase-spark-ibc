@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +8,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { SiteConfig } from "@/types/SiteConfig";
-import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type SiteConfigFormProps = {
   config: SiteConfig;
@@ -30,17 +29,16 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  // Cria um objeto com valores padrão garantindo que todas as propriedades sejam não-opcionais
-  const defaultValues: SiteConfig = {
-    title: config.title || "",
-    subtitle: config.subtitle || "",
-    featuredVideoUrl: config.featuredVideoUrl || "",
-    contactEmail: config.contactEmail || "",
-    contactPhone: config.contactPhone || "",
+  const defaultValues = {
+    title: config?.title || "",
+    subtitle: config?.subtitle || "",
+    featuredVideoUrl: config?.featuredVideoUrl || "",
+    contactEmail: config?.contactEmail || "",
+    contactPhone: config?.contactPhone || "",
     socialLinks: {
-      linkedin: config.socialLinks?.linkedin || "",
-      github: config.socialLinks?.github || "",
-      twitter: config.socialLinks?.twitter || ""
+      linkedin: config?.socialLinks?.linkedin || "",
+      github: config?.socialLinks?.github || "",
+      twitter: config?.socialLinks?.twitter || "",
     }
   };
 
@@ -50,7 +48,20 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
   });
 
   const handleSubmit = (data: z.infer<typeof siteConfigSchema>) => {
-    onSubmit(data);
+    const siteConfig: SiteConfig = {
+      title: data.title,
+      subtitle: data.subtitle,
+      featuredVideoUrl: data.featuredVideoUrl,
+      contactEmail: data.contactEmail,
+      contactPhone: data.contactPhone,
+      socialLinks: {
+        linkedin: data.socialLinks.linkedin,
+        github: data.socialLinks.github,
+        twitter: data.socialLinks.twitter
+      }
+    };
+    
+    onSubmit(siteConfig);
   };
 
   return (

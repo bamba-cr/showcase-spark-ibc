@@ -57,34 +57,73 @@ const Admin = () => {
 
   // Handler to create a new project
   const handleCreateProject = (newProject: Omit<Project, "id" | "gallery">) => {
-    // Create a unique ID for the new project
-    const projectId = `project-${Date.now()}`;
-    
-    const projectWithId: Project = {
-      ...newProject,
-      id: projectId,
-      gallery: [],
-    };
-    
-    setProjects([...projects, projectWithId]);
-    toast.success("Projeto criado com sucesso!");
-    // Switch to the projects tab after creation
-    setActiveTab("projects");
+    try {
+      // Create a unique ID for the new project
+      const projectId = `project-${Date.now()}`;
+      
+      const projectWithId: Project = {
+        ...newProject,
+        id: projectId,
+        gallery: [],
+      };
+      
+      setProjects(prevProjects => [...prevProjects, projectWithId]);
+      toast.success("Projeto criado com sucesso!");
+      // Switch to the projects tab after creation
+      setActiveTab("projects");
+    } catch (error) {
+      console.error("Erro ao criar projeto:", error);
+      toast.error("Erro ao criar projeto. Tente novamente.");
+    }
   };
 
   // Handler to update a project
   const handleUpdateProject = (updatedProject: Project) => {
-    setProjects(projects.map(project => 
-      project.id === updatedProject.id ? updatedProject : project
-    ));
-    toast.success("Projeto atualizado com sucesso!");
+    try {
+      // Check if the project exists
+      const projectExists = projects.some(p => p.id === updatedProject.id);
+      
+      if (!projectExists) {
+        toast.error("Projeto não encontrado.");
+        return;
+      }
+      
+      setProjects(prevProjects => 
+        prevProjects.map(project => 
+          project.id === updatedProject.id ? updatedProject : project
+        )
+      );
+      toast.success("Projeto atualizado com sucesso!");
+      setActiveTab("projects");
+    } catch (error) {
+      console.error("Erro ao atualizar projeto:", error);
+      toast.error("Erro ao atualizar projeto. Tente novamente.");
+    }
   };
 
   // Handler to remove a project
   const handleDeleteProject = (projectId: string) => {
-    setProjects(projects.filter(project => project.id !== projectId));
-    setSelectedProject(null);
-    toast.success("Projeto removido com sucesso!");
+    try {
+      // Check if the project exists
+      const projectExists = projects.some(p => p.id === projectId);
+      
+      if (!projectExists) {
+        toast.error("Projeto não encontrado.");
+        return;
+      }
+      
+      setProjects(prevProjects => prevProjects.filter(project => project.id !== projectId));
+      
+      // If the deleted project is currently selected, clear the selection
+      if (selectedProject && selectedProject.id === projectId) {
+        setSelectedProject(null);
+      }
+      
+      toast.success("Projeto removido com sucesso!");
+    } catch (error) {
+      console.error("Erro ao remover projeto:", error);
+      toast.error("Erro ao remover projeto. Tente novamente.");
+    }
   };
 
   // Handler to select a project for editing
