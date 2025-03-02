@@ -29,9 +29,23 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
+  // Make sure we have valid default values that match the required SiteConfig type
+  const defaultValues: SiteConfig = {
+    title: config.title,
+    subtitle: config.subtitle,
+    featuredVideoUrl: config.featuredVideoUrl || "",
+    contactEmail: config.contactEmail,
+    contactPhone: config.contactPhone,
+    socialLinks: {
+      linkedin: config.socialLinks.linkedin || "",
+      github: config.socialLinks.github || "",
+      twitter: config.socialLinks.twitter || ""
+    }
+  };
+
   const form = useForm<z.infer<typeof siteConfigSchema>>({
     resolver: zodResolver(siteConfigSchema),
-    defaultValues: config,
+    defaultValues,
   });
 
   const handleSubmit = (data: z.infer<typeof siteConfigSchema>) => {

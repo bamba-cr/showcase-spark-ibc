@@ -27,7 +27,7 @@ const projectSchema = z.object({
 });
 
 export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
-  // Define default values with all required fields
+  // Define default values with all required fields as non-optional
   const defaultValues: Omit<Project, "id" | "gallery"> = {
     title: project?.title || "",
     category: project?.category || "",
