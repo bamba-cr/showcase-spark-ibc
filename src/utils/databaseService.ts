@@ -1,158 +1,275 @@
 
 import { Project } from "@/types/Project";
 import { SiteConfig } from "@/types/SiteConfig";
-
-// Storage keys
-export const STORAGE_KEYS = {
-  PROJECTS: 'portfolio_projects',
-  SITE_CONFIG: 'portfolio_site_config'
-};
-
-// Default project data
-const DEFAULT_PROJECTS: Project[] = [
-  {
-    id: "project-1",
-    title: "Projeto de Demonstração",
-    category: "demo",
-    logoUrl: "https://img.icons8.com/fluency/96/puzzle.png",
-    imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
-    description: "Este é um projeto de demonstração para testes.",
-    fullDescription: "Descrição completa do projeto de demonstração para fins de teste e visualização no painel administrativo.",
-    gallery: [
-      "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6"
-    ],
-  },
-  {
-    id: "project-2",
-    title: "Website Corporativo",
-    category: "web",
-    logoUrl: "https://img.icons8.com/fluency/96/domain.png",
-    imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-    description: "Website responsivo para empresa de tecnologia.",
-    fullDescription: "Website moderno e responsivo desenvolvido para uma empresa de tecnologia, com design clean e funcionalidades avançadas.",
-    gallery: [],
-  }
-];
-
-// Default site configuration
-const DEFAULT_SITE_CONFIG: SiteConfig = {
-  title: "Meu Portfólio Profissional",
-  subtitle: "Desenvolvedor Web & Designer",
-  featuredVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-  contactEmail: "contato@exemplo.com",
-  contactPhone: "+55 11 12345-6789",
-  socialLinks: {
-    linkedin: "https://linkedin.com/in/exemplo",
-    github: "https://github.com/exemplo",
-    twitter: "https://twitter.com/exemplo"
-  }
-};
+import { supabase } from "@/integrations/supabase/client";
 
 // Project functions
-export const getProjects = (): Project[] => {
+export const fetchProjects = async (): Promise<Project[]> => {
   try {
-    const savedProjects = localStorage.getItem(STORAGE_KEYS.PROJECTS);
-    if (savedProjects) {
-      return JSON.parse(savedProjects);
+    // Buscar todos os projetos
+    const { data: projects, error: projectsError } = await supabase
+      .from('projects')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (projectsError) {
+      console.error("Erro ao buscar projetos:", projectsError);
+      return [];
     }
-    
-    // If no projects found, save and return defaults
-    saveProjects(DEFAULT_PROJECTS);
-    return DEFAULT_PROJECTS;
+
+    // Para cada projeto, buscar as imagens da galeria
+    const projectsWithGallery = await Promise.all(
+      projects.map(async (project) => {
+        const { data: galleryImages, error: galleryError } = await supabase
+          .from('project_gallery')
+          .select('image_url')
+          .eq('project_id', project.id)
+          .order('position', { ascending: true });
+
+        if (galleryError) {
+          console.error(`Erro ao buscar galeria para o projeto ${project.id}:`, galleryError);
+          return {
+            ...project,
+            id: project.id,
+            gallery: []
+          };
+        }
+
+        // Mapear os resultados para o formato esperado
+        return {
+          ...project,
+          id: project.id,
+          gallery: galleryImages.map(img => img.image_url)
+        };
+      })
+    );
+
+    return projectsWithGallery;
   } catch (error) {
     console.error("Erro ao buscar projetos:", error);
-    return DEFAULT_PROJECTS; // Return defaults on error instead of empty array
+    return [];
   }
 };
 
-export const saveProjects = (projects: Project[]): void => {
-  try {
-    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(projects));
-  } catch (error) {
-    console.error("Erro ao salvar projetos:", error);
-  }
-};
+export const getProjects = fetchProjects;
 
-export const addProject = (project: Project): Project[] => {
+export const addProject = async (project: Omit<Project, "id" | "gallery">): Promise<Project[]> => {
   try {
-    const projects = getProjects();
-    const updatedProjects = [...projects, project];
-    saveProjects(updatedProjects);
-    return updatedProjects;
+    // Inserir o novo projeto
+    const { data: newProject, error } = await supabase
+      .from('projects')
+      .insert({
+        title: project.title,
+        category: project.category,
+        logo_url: project.logoUrl,
+        image_url: project.imageUrl,
+        description: project.description,
+        full_description: project.fullDescription,
+        video: project.video
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Erro ao adicionar projeto:", error);
+      return await fetchProjects();
+    }
+
+    // Buscar todos os projetos atualizados
+    return await fetchProjects();
   } catch (error) {
     console.error("Erro ao adicionar projeto:", error);
-    return getProjects();
+    return await fetchProjects();
   }
 };
 
-export const updateProject = (updatedProject: Project): Project[] => {
+export const updateProject = async (updatedProject: Project): Promise<Project[]> => {
   try {
-    const projects = getProjects();
-    const updatedProjects = projects.map(project => 
-      project.id === updatedProject.id ? updatedProject : project
-    );
-    saveProjects(updatedProjects);
-    return updatedProjects;
+    // Atualizar o projeto
+    const { error: projectError } = await supabase
+      .from('projects')
+      .update({
+        title: updatedProject.title,
+        category: updatedProject.category,
+        logo_url: updatedProject.logoUrl,
+        image_url: updatedProject.imageUrl,
+        description: updatedProject.description,
+        full_description: updatedProject.fullDescription,
+        video: updatedProject.video
+      })
+      .eq('id', updatedProject.id);
+
+    if (projectError) {
+      console.error("Erro ao atualizar projeto:", projectError);
+      return await fetchProjects();
+    }
+
+    // Se houver imagens na galeria, atualizá-las
+    if (updatedProject.gallery && updatedProject.gallery.length > 0) {
+      // Primeiro, excluir todas as imagens existentes
+      const { error: deleteError } = await supabase
+        .from('project_gallery')
+        .delete()
+        .eq('project_id', updatedProject.id);
+
+      if (deleteError) {
+        console.error("Erro ao excluir imagens da galeria:", deleteError);
+        return await fetchProjects();
+      }
+
+      // Adicionar as novas imagens
+      const galleryData = updatedProject.gallery.map((url, index) => ({
+        project_id: updatedProject.id,
+        image_url: url,
+        position: index
+      }));
+
+      const { error: insertError } = await supabase
+        .from('project_gallery')
+        .insert(galleryData);
+
+      if (insertError) {
+        console.error("Erro ao inserir novas imagens na galeria:", insertError);
+      }
+    }
+
+    // Buscar todos os projetos atualizados
+    return await fetchProjects();
   } catch (error) {
     console.error("Erro ao atualizar projeto:", error);
-    return getProjects();
+    return await fetchProjects();
   }
 };
 
-export const deleteProject = (projectId: string): Project[] => {
+export const deleteProject = async (projectId: string): Promise<Project[]> => {
   try {
-    const projects = getProjects();
-    const updatedProjects = projects.filter(project => project.id !== projectId);
-    saveProjects(updatedProjects);
-    return updatedProjects;
+    // Excluir o projeto (as imagens da galeria serão excluídas automaticamente devido à restrição ON DELETE CASCADE)
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', projectId);
+
+    if (error) {
+      console.error("Erro ao excluir projeto:", error);
+      return await fetchProjects();
+    }
+
+    // Buscar todos os projetos atualizados
+    return await fetchProjects();
   } catch (error) {
     console.error("Erro ao excluir projeto:", error);
-    return getProjects();
+    return await fetchProjects();
   }
 };
 
-export const reorderProjects = (reorderedProjects: Project[]): void => {
-  saveProjects(reorderedProjects);
+export const reorderProjects = async (reorderedProjects: Project[]): Promise<void> => {
+  // Para reordenar projetos, podemos adicionar um campo 'position' na tabela 'projects'
+  // Por enquanto, mantemos a ordem no frontend
+  try {
+    // Não faz nada no banco por enquanto, apenas registra a ordem no console
+    console.log("Projetos reordenados:", reorderedProjects);
+  } catch (error) {
+    console.error("Erro ao reordenar projetos:", error);
+  }
 };
 
 // Site Configuration functions
-export const getSiteConfig = (): SiteConfig => {
+export const fetchSiteConfig = async (): Promise<SiteConfig> => {
   try {
-    const savedConfig = localStorage.getItem(STORAGE_KEYS.SITE_CONFIG);
-    if (savedConfig) {
-      return JSON.parse(savedConfig);
+    const { data, error } = await supabase
+      .from('site_config')
+      .select('*')
+      .single();
+
+    if (error) {
+      console.error("Erro ao buscar configuração do site:", error);
+      return getDefaultSiteConfig();
     }
-    
-    // If no config found, save and return defaults
-    saveSiteConfig(DEFAULT_SITE_CONFIG);
-    return DEFAULT_SITE_CONFIG;
+
+    // Mapear o resultado para o formato esperado
+    return {
+      title: data.title,
+      subtitle: data.subtitle,
+      featuredVideoUrl: data.featured_video_url,
+      contactEmail: data.contact_email,
+      contactPhone: data.contact_phone,
+      socialLinks: data.social_links
+    };
   } catch (error) {
     console.error("Erro ao buscar configuração do site:", error);
-    return DEFAULT_SITE_CONFIG;
+    return getDefaultSiteConfig();
   }
 };
 
-export const saveSiteConfig = (config: SiteConfig): void => {
+export const getSiteConfig = fetchSiteConfig;
+
+export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
   try {
-    localStorage.setItem(STORAGE_KEYS.SITE_CONFIG, JSON.stringify(config));
+    // Verificar se já existe uma configuração
+    const { data } = await supabase
+      .from('site_config')
+      .select('id')
+      .limit(1);
+
+    if (data && data.length > 0) {
+      // Atualizar a configuração existente
+      const { error } = await supabase
+        .from('site_config')
+        .update({
+          title: config.title,
+          subtitle: config.subtitle,
+          featured_video_url: config.featuredVideoUrl,
+          contact_email: config.contactEmail,
+          contact_phone: config.contactPhone,
+          social_links: config.socialLinks,
+          updated_at: new Date()
+        })
+        .eq('id', data[0].id);
+
+      if (error) {
+        console.error("Erro ao atualizar configuração do site:", error);
+      }
+    } else {
+      // Inserir uma nova configuração
+      const { error } = await supabase
+        .from('site_config')
+        .insert({
+          title: config.title,
+          subtitle: config.subtitle,
+          featured_video_url: config.featuredVideoUrl,
+          contact_email: config.contactEmail,
+          contact_phone: config.contactPhone,
+          social_links: config.socialLinks
+        });
+
+      if (error) {
+        console.error("Erro ao inserir configuração do site:", error);
+      }
+    }
   } catch (error) {
     console.error("Erro ao salvar configuração do site:", error);
   }
 };
 
-// Helper function for query refetching
-export const fetchProjects = async (): Promise<Project[]> => {
-  return getProjects();
-};
-
-export const fetchSiteConfig = async (): Promise<SiteConfig> => {
-  return getSiteConfig();
+// Default values (fallback)
+const getDefaultSiteConfig = (): SiteConfig => {
+  return {
+    title: "Meu Portfólio Profissional",
+    subtitle: "Desenvolvedor Web & Designer",
+    featuredVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    contactEmail: "contato@exemplo.com",
+    contactPhone: "+55 11 12345-6789",
+    socialLinks: {
+      linkedin: "https://linkedin.com/in/exemplo",
+      github: "https://github.com/exemplo",
+      twitter: "https://twitter.com/exemplo"
+    }
+  };
 };
 
 export default {
   getProjects,
-  saveProjects,
+  saveProjects: () => {}, // Não é mais necessário
   addProject,
   updateProject,
   deleteProject,
