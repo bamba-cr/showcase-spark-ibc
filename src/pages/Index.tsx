@@ -6,49 +6,7 @@ import { Stats } from "@/components/Stats";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
-import { SiteConfig } from "@/types/SiteConfig";
-
-// Function to retrieve site configuration from localStorage
-const fetchSiteConfig = async (): Promise<SiteConfig> => {
-  try {
-    const savedConfig = localStorage.getItem('portfolio_site_config');
-    
-    if (savedConfig) {
-      return JSON.parse(savedConfig);
-    }
-    
-    // Default configuration if not found in localStorage
-    const defaultConfig = {
-      title: "Meu Portfólio Profissional",
-      subtitle: "Desenvolvedor Web & Designer",
-      featuredVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-      contactEmail: "contato@exemplo.com",
-      contactPhone: "+55 11 12345-6789",
-      socialLinks: {
-        linkedin: "https://linkedin.com/in/exemplo",
-        github: "https://github.com/exemplo",
-        twitter: "https://twitter.com/exemplo"
-      }
-    };
-    
-    // Save default config if not found
-    localStorage.setItem('portfolio_site_config', JSON.stringify(defaultConfig));
-    return defaultConfig;
-  } catch (error) {
-    console.error("Erro ao carregar configuração do site:", error);
-    return {
-      title: "Meu Portfólio",
-      subtitle: "Desenvolvedor Web",
-      contactEmail: "contato@exemplo.com",
-      contactPhone: "",
-      socialLinks: {
-        linkedin: "",
-        github: "",
-        twitter: ""
-      }
-    };
-  }
-};
+import { fetchSiteConfig } from "@/utils/databaseService";
 
 const Index = () => {
   // Fetch site configuration using react-query

@@ -2,7 +2,17 @@
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
-export const HeroSection = () => {
+interface HeroSectionProps {
+  title?: string;
+  subtitle?: string;
+  videoUrl?: string;
+}
+
+export const HeroSection = ({ 
+  title = "Instituto IBC", 
+  subtitle = "Transformando vidas", 
+  videoUrl 
+}: HeroSectionProps) => {
   return (
     <div id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
@@ -15,7 +25,10 @@ export const HeroSection = () => {
           playsInline
           poster="https://images.unsplash.com/photo-1469041797191-50ace28483c3"
         >
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-heights-in-a-sunset-26070-large.mp4" type="video/mp4" />
+          <source 
+            src={videoUrl || "https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-heights-in-a-sunset-26070-large.mp4"} 
+            type="video/mp4" 
+          />
           <img
             src="https://images.unsplash.com/photo-1469041797191-50ace28483c3"
             alt="Hero Background"
@@ -31,11 +44,11 @@ export const HeroSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-2 font-heading">
-            Instituto IBC
+            {title}
           </h1>
           
           <p className="text-lg text-white/90 mb-6">
-            Transformando vidas
+            {subtitle}
           </p>
           
           <div className="flex flex-col xs:flex-row gap-3 justify-center">

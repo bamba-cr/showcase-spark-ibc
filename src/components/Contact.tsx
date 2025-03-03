@@ -1,7 +1,21 @@
 
 import { Send, MapPin, Phone, Mail } from "lucide-react";
 
-export const Contact = () => {
+interface ContactProps {
+  email?: string;
+  phone?: string;
+  socialLinks?: {
+    linkedin?: string;
+    github?: string;
+    twitter?: string;
+  };
+}
+
+export const Contact = ({ 
+  email = "contato@ibc.org", 
+  phone = "(11) 1234-5678",
+  socialLinks = {}
+}: ContactProps) => {
   return (
     <section id="contact" className="py-12 bg-white">
       <div className="container mx-auto px-4">
@@ -29,7 +43,7 @@ export const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-medium">Telefone</h4>
-                  <p className="text-white/80 text-sm">(11) 1234-5678</p>
+                  <p className="text-white/80 text-sm">{phone}</p>
                 </div>
               </div>
               
@@ -39,7 +53,7 @@ export const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-medium">Email</h4>
-                  <p className="text-white/80 text-sm">contato@ibc.org</p>
+                  <p className="text-white/80 text-sm">{email}</p>
                 </div>
               </div>
             </div>
