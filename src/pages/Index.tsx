@@ -14,7 +14,7 @@ const Index = () => {
     queryKey: ['siteConfig'],
     queryFn: fetchSiteConfig,
     staleTime: 1000 * 60 * 5, // 5 minutes
-    cacheTime: 1000 * 60 * 10, // 10 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes (formerly cacheTime)
   });
 
   if (isLoading) {
