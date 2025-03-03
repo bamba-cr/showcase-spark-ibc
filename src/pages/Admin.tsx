@@ -10,6 +10,11 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { SiteConfig } from "@/types/SiteConfig";
 
+const STORAGE_KEYS = {
+  PROJECTS: 'portfolio_projects',
+  SITE_CONFIG: 'portfolio_site_config'
+};
+
 const Admin = () => {
   // Site configuration state
   const [siteConfig, setSiteConfig] = useState<SiteConfig>({
@@ -29,9 +34,19 @@ const Admin = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeTab, setActiveTab] = useState("projects");
 
-  // Load projects from localStorage on component mount
+  // Load data from localStorage on component mount
   useEffect(() => {
-    const savedProjects = localStorage.getItem('portfolio_projects');
+    // Load site configuration
+    const savedConfig = localStorage.getItem(STORAGE_KEYS.SITE_CONFIG);
+    if (savedConfig) {
+      setSiteConfig(JSON.parse(savedConfig));
+    } else {
+      // Save default config if nothing in localStorage
+      localStorage.setItem(STORAGE_KEYS.SITE_CONFIG, JSON.stringify(siteConfig));
+    }
+    
+    // Load projects
+    const savedProjects = localStorage.getItem(STORAGE_KEYS.PROJECTS);
     if (savedProjects) {
       setProjects(JSON.parse(savedProjects));
     } else {
@@ -62,14 +77,19 @@ const Admin = () => {
         }
       ];
       setProjects(defaultProjects);
-      localStorage.setItem('portfolio_projects', JSON.stringify(defaultProjects));
+      localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(defaultProjects));
     }
   }, []);
 
   // Save projects to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('portfolio_projects', JSON.stringify(projects));
+    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(projects));
   }, [projects]);
+
+  // Save site configuration to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.SITE_CONFIG, JSON.stringify(siteConfig));
+  }, [siteConfig]);
 
   // Handler to create a new project
   const handleCreateProject = (newProject: Omit<Project, "id" | "gallery">) => {
@@ -83,7 +103,13 @@ const Admin = () => {
         gallery: [],
       };
       
-      setProjects(prevProjects => [...prevProjects, projectWithId]);
+      setProjects(prevProjects => {
+        const updatedProjects = [...prevProjects, projectWithId];
+        // Update localStorage
+        localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(updatedProjects));
+        return updatedProjects;
+      });
+      
       toast.success("Projeto criado com sucesso!");
       // Switch to the projects tab after creation
       setActiveTab("projects");
@@ -104,11 +130,15 @@ const Admin = () => {
         return;
       }
       
-      setProjects(prevProjects => 
-        prevProjects.map(project => 
+      setProjects(prevProjects => {
+        const updatedProjects = prevProjects.map(project => 
           project.id === updatedProject.id ? updatedProject : project
-        )
-      );
+        );
+        // Update localStorage
+        localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(updatedProjects));
+        return updatedProjects;
+      });
+      
       toast.success("Projeto atualizado com sucesso!");
       setActiveTab("projects");
     } catch (error) {
@@ -128,7 +158,12 @@ const Admin = () => {
         return;
       }
       
-      setProjects(prevProjects => prevProjects.filter(project => project.id !== projectId));
+      setProjects(prevProjects => {
+        const updatedProjects = prevProjects.filter(project => project.id !== projectId);
+        // Update localStorage
+        localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(updatedProjects));
+        return updatedProjects;
+      });
       
       // If the deleted project is currently selected, clear the selection
       if (selectedProject && selectedProject.id === projectId) {
@@ -151,12 +186,16 @@ const Admin = () => {
   // Handler to reorder projects
   const handleReorderProjects = (reorderedProjects: Project[]) => {
     setProjects(reorderedProjects);
+    // Update localStorage
+    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(reorderedProjects));
     toast.success("Ordem dos projetos atualizada com sucesso!");
   };
 
   // Handler to update the site configuration
   const handleUpdateSiteConfig = (newConfig: SiteConfig) => {
     setSiteConfig(newConfig);
+    // Update localStorage
+    localStorage.setItem(STORAGE_KEYS.SITE_CONFIG, JSON.stringify(newConfig));
     toast.success("Configurações do site atualizadas com sucesso!");
   };
 

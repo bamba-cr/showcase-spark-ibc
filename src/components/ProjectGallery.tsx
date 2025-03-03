@@ -3,6 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Project } from "@/types/Project";
 import { useQuery } from "@tanstack/react-query";
+import { SiteConfig } from "@/types/SiteConfig";
+
+const STORAGE_KEYS = {
+  PROJECTS: 'portfolio_projects',
+  SITE_CONFIG: 'portfolio_site_config'
+};
 
 // Componente de galeria de imagens com rolagem moderna
 const ImageGallery = ({ images }: { images: string[] }) => {
@@ -203,15 +209,13 @@ const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => 
 // Função para buscar os projetos para exibição
 const fetchProjects = async (): Promise<Project[]> => {
   try {
-    // Recuperar projetos do localStorage onde o Admin os salva
-    const savedProjects = localStorage.getItem('portfolio_projects');
+    const savedProjects = localStorage.getItem(STORAGE_KEYS.PROJECTS);
     
     if (savedProjects) {
       return JSON.parse(savedProjects);
     }
     
-    // Fallback para projetos de demonstração caso não existam no localStorage
-    return [
+    const defaultProjects = [
       {
         id: "project-1",
         title: "Projeto de Demonstração",
@@ -236,9 +240,52 @@ const fetchProjects = async (): Promise<Project[]> => {
         gallery: [],
       }
     ];
+    
+    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(defaultProjects));
+    return defaultProjects;
   } catch (error) {
     console.error("Erro ao buscar projetos:", error);
     return [];
+  }
+};
+
+// Função para buscar a configuração do site
+const fetchSiteConfig = async (): Promise<SiteConfig> => {
+  try {
+    const savedConfig = localStorage.getItem(STORAGE_KEYS.SITE_CONFIG);
+    
+    if (savedConfig) {
+      return JSON.parse(savedConfig);
+    }
+    
+    const defaultConfig = {
+      title: "Meu Portfólio Profissional",
+      subtitle: "Desenvolvedor Web & Designer",
+      featuredVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      contactEmail: "contato@exemplo.com",
+      contactPhone: "+55 11 12345-6789",
+      socialLinks: {
+        linkedin: "https://linkedin.com/in/exemplo",
+        github: "https://github.com/exemplo",
+        twitter: "https://twitter.com/exemplo"
+      }
+    };
+    
+    localStorage.setItem(STORAGE_KEYS.SITE_CONFIG, JSON.stringify(defaultConfig));
+    return defaultConfig;
+  } catch (error) {
+    console.error("Erro ao buscar configuração do site:", error);
+    return {
+      title: "Meu Portfólio",
+      subtitle: "Desenvolvedor Web",
+      contactEmail: "contato@exemplo.com",
+      contactPhone: "",
+      socialLinks: {
+        linkedin: "",
+        github: "",
+        twitter: ""
+      }
+    };
   }
 };
 
@@ -246,23 +293,33 @@ const fetchProjects = async (): Promise<Project[]> => {
 export const ProjectGallery = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  // Usar react-query para buscar os projetos
-  const { data: projects = [], isLoading, error } = useQuery({
+  const { data: projects = [], isLoading: projectsLoading, error: projectsError } = useQuery({
     queryKey: ['projects'],
     queryFn: fetchProjects,
+    refetchInterval: 60000,
+    refetchOnWindowFocus: true,
+  });
+
+  const { data: siteConfig } = useQuery({
+    queryKey: ['siteConfig'],
+    queryFn: fetchSiteConfig,
+    refetchInterval: 60000,
+    refetchOnWindowFocus: true,
   });
 
   return (
     <section id="projects" className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-8">Projetos</h2>
+        <h2 className="text-3xl font-bold text-center mb-8">
+          {siteConfig?.title ? `Projetos - ${siteConfig.title}` : "Projetos"}
+        </h2>
 
-        {isLoading ? (
+        {projectsLoading ? (
           <div className="text-center py-12">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
             <p className="mt-2 text-gray-600">Carregando projetos...</p>
           </div>
-        ) : error ? (
+        ) : projectsError ? (
           <div className="text-center py-12 text-red-500">
             Erro ao carregar os projetos. Por favor, tente novamente.
           </div>
