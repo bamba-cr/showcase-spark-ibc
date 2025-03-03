@@ -62,7 +62,7 @@ export const getProjects = (): Project[] => {
     return DEFAULT_PROJECTS;
   } catch (error) {
     console.error("Erro ao buscar projetos:", error);
-    return [];
+    return DEFAULT_PROJECTS; // Return defaults on error instead of empty array
   }
 };
 

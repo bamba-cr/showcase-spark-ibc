@@ -13,6 +13,8 @@ const Index = () => {
   const { data: siteConfig, isLoading } = useQuery({
     queryKey: ['siteConfig'],
     queryFn: fetchSiteConfig,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    cacheTime: 1000 * 60 * 10, // 10 minutes
   });
 
   if (isLoading) {
