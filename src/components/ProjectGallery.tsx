@@ -3,12 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Project } from "@/types/Project";
 import { useQuery } from "@tanstack/react-query";
-import { SiteConfig } from "@/types/SiteConfig";
-
-const STORAGE_KEYS = {
-  PROJECTS: 'portfolio_projects',
-  SITE_CONFIG: 'portfolio_site_config'
-};
+import { fetchProjects, fetchSiteConfig } from "@/utils/databaseService";
 
 // Componente de galeria de imagens com rolagem moderna
 const ImageGallery = ({ images }: { images: string[] }) => {
@@ -204,89 +199,6 @@ const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => 
       </div>
     </div>
   );
-};
-
-// Função para buscar os projetos para exibição
-const fetchProjects = async (): Promise<Project[]> => {
-  try {
-    const savedProjects = localStorage.getItem(STORAGE_KEYS.PROJECTS);
-    
-    if (savedProjects) {
-      return JSON.parse(savedProjects);
-    }
-    
-    const defaultProjects = [
-      {
-        id: "project-1",
-        title: "Projeto de Demonstração",
-        category: "demo",
-        logoUrl: "https://img.icons8.com/fluency/96/puzzle.png",
-        imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
-        description: "Este é um projeto de demonstração para testes.",
-        fullDescription: "Descrição completa do projeto de demonstração para fins de teste e visualização no painel administrativo.",
-        gallery: [
-          "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-          "https://images.unsplash.com/photo-1461749280684-dccba630e2f6"
-        ],
-      },
-      {
-        id: "project-2",
-        title: "Website Corporativo",
-        category: "web",
-        logoUrl: "https://img.icons8.com/fluency/96/domain.png",
-        imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-        description: "Website responsivo para empresa de tecnologia.",
-        fullDescription: "Website moderno e responsivo desenvolvido para uma empresa de tecnologia, com design clean e funcionalidades avançadas.",
-        gallery: [],
-      }
-    ];
-    
-    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(defaultProjects));
-    return defaultProjects;
-  } catch (error) {
-    console.error("Erro ao buscar projetos:", error);
-    return [];
-  }
-};
-
-// Função para buscar a configuração do site
-const fetchSiteConfig = async (): Promise<SiteConfig> => {
-  try {
-    const savedConfig = localStorage.getItem(STORAGE_KEYS.SITE_CONFIG);
-    
-    if (savedConfig) {
-      return JSON.parse(savedConfig);
-    }
-    
-    const defaultConfig = {
-      title: "Meu Portfólio Profissional",
-      subtitle: "Desenvolvedor Web & Designer",
-      featuredVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-      contactEmail: "contato@exemplo.com",
-      contactPhone: "+55 11 12345-6789",
-      socialLinks: {
-        linkedin: "https://linkedin.com/in/exemplo",
-        github: "https://github.com/exemplo",
-        twitter: "https://twitter.com/exemplo"
-      }
-    };
-    
-    localStorage.setItem(STORAGE_KEYS.SITE_CONFIG, JSON.stringify(defaultConfig));
-    return defaultConfig;
-  } catch (error) {
-    console.error("Erro ao buscar configuração do site:", error);
-    return {
-      title: "Meu Portfólio",
-      subtitle: "Desenvolvedor Web",
-      contactEmail: "contato@exemplo.com",
-      contactPhone: "",
-      socialLinks: {
-        linkedin: "",
-        github: "",
-        twitter: ""
-      }
-    };
-  }
 };
 
 // Componente principal

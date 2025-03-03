@@ -9,7 +9,110 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      project_gallery: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_url: string
+          position: number | null
+          project_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_url: string
+          position?: number | null
+          project_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_url?: string
+          position?: number | null
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_gallery_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string
+          full_description: string | null
+          id: string
+          image_url: string
+          logo_url: string
+          title: string
+          updated_at: string | null
+          video: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description: string
+          full_description?: string | null
+          id?: string
+          image_url: string
+          logo_url: string
+          title: string
+          updated_at?: string | null
+          video?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string
+          full_description?: string | null
+          id?: string
+          image_url?: string
+          logo_url?: string
+          title?: string
+          updated_at?: string | null
+          video?: string | null
+        }
+        Relationships: []
+      }
+      site_config: {
+        Row: {
+          contact_email: string
+          contact_phone: string | null
+          featured_video_url: string | null
+          id: string
+          social_links: Json | null
+          subtitle: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          contact_email: string
+          contact_phone?: string | null
+          featured_video_url?: string | null
+          id?: string
+          social_links?: Json | null
+          subtitle: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          contact_email?: string
+          contact_phone?: string | null
+          featured_video_url?: string | null
+          id?: string
+          social_links?: Json | null
+          subtitle?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

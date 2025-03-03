@@ -39,8 +39,15 @@ export const fetchProjects = async (): Promise<Project[]> => {
         return {
           ...project,
           id: project.id,
+          title: project.title,
+          category: project.category,
+          logoUrl: project.logo_url,
+          imageUrl: project.image_url,
+          description: project.description,
+          fullDescription: project.full_description,
+          video: project.video || "",
           gallery: galleryImages.map(img => img.image_url)
-        };
+        } as Project;
       })
     );
 
@@ -186,15 +193,19 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
       return getDefaultSiteConfig();
     }
 
-    // Mapear o resultado para o formato esperado
-    return {
-      title: data.title,
-      subtitle: data.subtitle,
-      featuredVideoUrl: data.featured_video_url,
-      contactEmail: data.contact_email,
-      contactPhone: data.contact_phone,
-      socialLinks: data.social_links
-    };
+    if (data) {
+      // Mapear o resultado para o formato esperado
+      return {
+        title: data.title,
+        subtitle: data.subtitle,
+        featuredVideoUrl: data.featured_video_url,
+        contactEmail: data.contact_email,
+        contactPhone: data.contact_phone,
+        socialLinks: data.social_links
+      };
+    } else {
+      return getDefaultSiteConfig();
+    }
   } catch (error) {
     console.error("Erro ao buscar configuração do site:", error);
     return getDefaultSiteConfig();
