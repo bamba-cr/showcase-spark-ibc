@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
@@ -201,12 +200,18 @@ const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => 
   );
 };
 
-// Função para buscar os projetos do Admin
-const fetchProjects = (): Promise<Project[]> => {
-  // Aqui poderia ser uma chamada API real
-  // Por enquanto vamos retornar os mesmos projetos do Admin
-  return new Promise((resolve) => {
-    const adminProjects = [
+// Função para buscar os projetos para exibição
+const fetchProjects = async (): Promise<Project[]> => {
+  try {
+    // Recuperar projetos do localStorage onde o Admin os salva
+    const savedProjects = localStorage.getItem('portfolio_projects');
+    
+    if (savedProjects) {
+      return JSON.parse(savedProjects);
+    }
+    
+    // Fallback para projetos de demonstração caso não existam no localStorage
+    return [
       {
         id: "project-1",
         title: "Projeto de Demonstração",
@@ -231,8 +236,10 @@ const fetchProjects = (): Promise<Project[]> => {
         gallery: [],
       }
     ];
-    resolve(adminProjects);
-  });
+  } catch (error) {
+    console.error("Erro ao buscar projetos:", error);
+    return [];
+  }
 };
 
 // Componente principal

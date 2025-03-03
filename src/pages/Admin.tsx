@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ProjectMediaManager } from "@/components/admin/ProjectMediaManager";
 import { ProjectList } from "@/components/admin/ProjectList";
 import { ProjectForm } from "@/components/admin/ProjectForm";
@@ -26,34 +25,51 @@ const Admin = () => {
     }
   });
 
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: "project-1",
-      title: "Projeto de Demonstração",
-      category: "demo",
-      logoUrl: "https://img.icons8.com/fluency/96/puzzle.png",
-      imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
-      description: "Este é um projeto de demonstração para testes.",
-      fullDescription: "Descrição completa do projeto de demonstração para fins de teste e visualização no painel administrativo.",
-      gallery: [
-        "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-        "https://images.unsplash.com/photo-1461749280684-dccba630e2f6"
-      ],
-    },
-    {
-      id: "project-2",
-      title: "Website Corporativo",
-      category: "web",
-      logoUrl: "https://img.icons8.com/fluency/96/domain.png",
-      imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-      description: "Website responsivo para empresa de tecnologia.",
-      fullDescription: "Website moderno e responsivo desenvolvido para uma empresa de tecnologia, com design clean e funcionalidades avançadas.",
-      gallery: [],
-    }
-  ]);
-  
+  const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeTab, setActiveTab] = useState("projects");
+
+  // Load projects from localStorage on component mount
+  useEffect(() => {
+    const savedProjects = localStorage.getItem('portfolio_projects');
+    if (savedProjects) {
+      setProjects(JSON.parse(savedProjects));
+    } else {
+      // Set default projects if nothing in localStorage
+      const defaultProjects = [
+        {
+          id: "project-1",
+          title: "Projeto de Demonstração",
+          category: "demo",
+          logoUrl: "https://img.icons8.com/fluency/96/puzzle.png",
+          imageUrl: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
+          description: "Este é um projeto de demonstração para testes.",
+          fullDescription: "Descrição completa do projeto de demonstração para fins de teste e visualização no painel administrativo.",
+          gallery: [
+            "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+            "https://images.unsplash.com/photo-1461749280684-dccba630e2f6"
+          ],
+        },
+        {
+          id: "project-2",
+          title: "Website Corporativo",
+          category: "web",
+          logoUrl: "https://img.icons8.com/fluency/96/domain.png",
+          imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+          description: "Website responsivo para empresa de tecnologia.",
+          fullDescription: "Website moderno e responsivo desenvolvido para uma empresa de tecnologia, com design clean e funcionalidades avançadas.",
+          gallery: [],
+        }
+      ];
+      setProjects(defaultProjects);
+      localStorage.setItem('portfolio_projects', JSON.stringify(defaultProjects));
+    }
+  }, []);
+
+  // Save projects to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('portfolio_projects', JSON.stringify(projects));
+  }, [projects]);
 
   // Handler to create a new project
   const handleCreateProject = (newProject: Omit<Project, "id" | "gallery">) => {
