@@ -2,6 +2,7 @@
 import { Project } from "@/types/Project";
 import { SiteConfig } from "@/types/SiteConfig";
 import { supabase } from "@/integrations/supabase/client";
+import { Json } from "@/integrations/supabase/types";
 
 // Project functions
 export const fetchProjects = async (): Promise<Project[]> => {
@@ -29,22 +30,27 @@ export const fetchProjects = async (): Promise<Project[]> => {
         if (galleryError) {
           console.error(`Erro ao buscar galeria para o projeto ${project.id}:`, galleryError);
           return {
-            ...project,
             id: project.id,
+            title: project.title,
+            category: project.category,
+            logoUrl: project.logo_url,
+            imageUrl: project.image_url,
+            description: project.description,
+            fullDescription: project.full_description || "",
+            video: project.video || "",
             gallery: []
-          };
+          } as Project;
         }
 
         // Mapear os resultados para o formato esperado
         return {
-          ...project,
           id: project.id,
           title: project.title,
           category: project.category,
           logoUrl: project.logo_url,
           imageUrl: project.image_url,
           description: project.description,
-          fullDescription: project.full_description,
+          fullDescription: project.full_description || "",
           video: project.video || "",
           gallery: galleryImages.map(img => img.image_url)
         } as Project;
@@ -186,7 +192,7 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
     const { data, error } = await supabase
       .from('site_config')
       .select('*')
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error("Erro ao buscar configuração do site:", error);
@@ -194,14 +200,25 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
     }
 
     if (data) {
-      // Mapear o resultado para o formato esperado
+      // Mapear o resultado para o formato esperado e garantir que socialLinks seja do tipo correto
+      const socialLinksData = data.social_links as Json;
+      
+      const socialLinks: { linkedin?: string; github?: string; twitter?: string } = 
+        typeof socialLinksData === 'object' && socialLinksData !== null
+          ? {
+              linkedin: typeof socialLinksData.linkedin === 'string' ? socialLinksData.linkedin : undefined,
+              github: typeof socialLinksData.github === 'string' ? socialLinksData.github : undefined,
+              twitter: typeof socialLinksData.twitter === 'string' ? socialLinksData.twitter : undefined
+            }
+          : {};
+      
       return {
         title: data.title,
         subtitle: data.subtitle,
-        featuredVideoUrl: data.featured_video_url,
+        featuredVideoUrl: data.featured_video_url || undefined,
         contactEmail: data.contact_email,
-        contactPhone: data.contact_phone,
-        socialLinks: data.social_links
+        contactPhone: data.contact_phone || "",
+        socialLinks
       };
     } else {
       return getDefaultSiteConfig();
@@ -233,7 +250,7 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
           contact_email: config.contactEmail,
           contact_phone: config.contactPhone,
           social_links: config.socialLinks,
-          updated_at: new Date()
+          updated_at: new Date().toISOString()
         })
         .eq('id', data[0].id);
 

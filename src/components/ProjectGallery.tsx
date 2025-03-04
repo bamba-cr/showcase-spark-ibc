@@ -208,6 +208,7 @@ export const ProjectGallery = () => {
   const { data: projects = [], isLoading: projectsLoading, error: projectsError } = useQuery({
     queryKey: ['projects'],
     queryFn: fetchProjects,
+    gcTime: 60000,
     refetchInterval: 60000,
     refetchOnWindowFocus: true,
   });
@@ -215,6 +216,7 @@ export const ProjectGallery = () => {
   const { data: siteConfig } = useQuery({
     queryKey: ['siteConfig'],
     queryFn: fetchSiteConfig,
+    gcTime: 60000,
     refetchInterval: 60000,
     refetchOnWindowFocus: true,
   });
