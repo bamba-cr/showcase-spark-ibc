@@ -145,6 +145,7 @@ const Admin = () => {
 
   // Handler to update the site configuration
   const handleUpdateSiteConfig = (newConfig: SiteConfig) => {
+    console.log("Atualizando configurações do site:", newConfig);
     updateSiteConfigMutation.mutate(newConfig);
   };
 

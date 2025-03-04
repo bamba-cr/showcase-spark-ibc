@@ -299,10 +299,10 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
     const configData = {
       title: config.title,
       subtitle: config.subtitle,
-      featured_video_url: config.featuredVideoUrl,
+      featured_video_url: config.featuredVideoUrl || null,
       contact_email: config.contactEmail,
-      contact_phone: config.contactPhone,
-      social_links: config.socialLinks, // Já está no formato correto de objeto JS
+      contact_phone: config.contactPhone || null,
+      social_links: config.socialLinks || {}, // Ensure it's always an object
       updated_at: new Date().toISOString()
     };
     
@@ -310,15 +310,18 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
     console.log("Dados formatados para salvar:", configData);
 
     if (data && data.length > 0) {
-      // Atualizar a configuração existente
+      // Atualizar a configuração existente - usando upsert para garantir
       const { error, data: updatedData } = await supabase
         .from('site_config')
-        .update(configData)
-        .eq('id', data[0].id)
+        .upsert({
+          id: data[0].id,
+          ...configData
+        })
         .select();
 
       if (error) {
         console.error("Erro ao atualizar configuração do site:", error);
+        throw error;
       } else {
         console.log("Configuração atualizada com sucesso:", updatedData);
       }
@@ -331,12 +334,26 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
 
       if (error) {
         console.error("Erro ao inserir configuração do site:", error);
+        throw error;
       } else {
         console.log("Configuração inserida com sucesso:", insertedData);
       }
     }
+    
+    // Forçar uma atualização dos dados após a operação para verificar se foi bem-sucedido
+    const { data: verificationData, error: verificationError } = await supabase
+      .from('site_config')
+      .select('*')
+      .limit(1);
+      
+    if (verificationError) {
+      console.error("Erro ao verificar atualização:", verificationError);
+    } else {
+      console.log("Verificação após atualização:", verificationData);
+    }
   } catch (error) {
     console.error("Erro ao salvar configuração do site:", error);
+    throw error;
   }
 };
 
