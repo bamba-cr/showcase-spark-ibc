@@ -7,6 +7,7 @@ import { Json } from "@/integrations/supabase/types";
 // Project functions
 export const fetchProjects = async (): Promise<Project[]> => {
   try {
+    console.log("Fetching projects...");
     // Buscar todos os projetos
     const { data: projects, error: projectsError } = await supabase
       .from('projects')
@@ -17,6 +18,8 @@ export const fetchProjects = async (): Promise<Project[]> => {
       console.error("Erro ao buscar projetos:", projectsError);
       return [];
     }
+
+    console.log(`Fetched ${projects.length} projects successfully`);
 
     // Para cada projeto, buscar as imagens da galeria
     const projectsWithGallery = await Promise.all(
@@ -68,18 +71,25 @@ export const getProjects = fetchProjects;
 
 export const addProject = async (project: Omit<Project, "id" | "gallery">): Promise<Project[]> => {
   try {
+    console.log("Adding new project:", project);
+    
+    // Preparar dados para inserção
+    const projectData = {
+      title: project.title,
+      category: project.category,
+      logo_url: project.logoUrl,
+      image_url: project.imageUrl,
+      description: project.description,
+      full_description: project.fullDescription,
+      video: project.video,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
     // Inserir o novo projeto
     const { data: newProject, error } = await supabase
       .from('projects')
-      .insert({
-        title: project.title,
-        category: project.category,
-        logo_url: project.logoUrl,
-        image_url: project.imageUrl,
-        description: project.description,
-        full_description: project.fullDescription,
-        video: project.video
-      })
+      .insert(projectData)
       .select()
       .single();
 
@@ -88,6 +98,8 @@ export const addProject = async (project: Omit<Project, "id" | "gallery">): Prom
       return await fetchProjects();
     }
 
+    console.log("Project added successfully:", newProject);
+    
     // Buscar todos os projetos atualizados
     return await fetchProjects();
   } catch (error) {
@@ -98,18 +110,24 @@ export const addProject = async (project: Omit<Project, "id" | "gallery">): Prom
 
 export const updateProject = async (updatedProject: Project): Promise<Project[]> => {
   try {
+    console.log("Updating project:", updatedProject);
+    
+    // Preparar dados para atualização
+    const projectData = {
+      title: updatedProject.title,
+      category: updatedProject.category,
+      logo_url: updatedProject.logoUrl,
+      image_url: updatedProject.imageUrl,
+      description: updatedProject.description,
+      full_description: updatedProject.fullDescription,
+      video: updatedProject.video,
+      updated_at: new Date().toISOString()
+    };
+    
     // Atualizar o projeto
     const { error: projectError } = await supabase
       .from('projects')
-      .update({
-        title: updatedProject.title,
-        category: updatedProject.category,
-        logo_url: updatedProject.logoUrl,
-        image_url: updatedProject.imageUrl,
-        description: updatedProject.description,
-        full_description: updatedProject.fullDescription,
-        video: updatedProject.video
-      })
+      .update(projectData)
       .eq('id', updatedProject.id);
 
     if (projectError) {
@@ -117,9 +135,12 @@ export const updateProject = async (updatedProject: Project): Promise<Project[]>
       return await fetchProjects();
     }
 
+    console.log("Project data updated successfully");
+
     // Se houver imagens na galeria, atualizá-las
     if (updatedProject.gallery && updatedProject.gallery.length > 0) {
       // Primeiro, excluir todas as imagens existentes
+      console.log(`Removing existing gallery images for project ${updatedProject.id}`);
       const { error: deleteError } = await supabase
         .from('project_gallery')
         .delete()
@@ -134,9 +155,11 @@ export const updateProject = async (updatedProject: Project): Promise<Project[]>
       const galleryData = updatedProject.gallery.map((url, index) => ({
         project_id: updatedProject.id,
         image_url: url,
-        position: index
+        position: index,
+        created_at: new Date().toISOString()
       }));
 
+      console.log(`Adding ${galleryData.length} new gallery images`);
       const { error: insertError } = await supabase
         .from('project_gallery')
         .insert(galleryData);
@@ -156,7 +179,20 @@ export const updateProject = async (updatedProject: Project): Promise<Project[]>
 
 export const deleteProject = async (projectId: string): Promise<Project[]> => {
   try {
-    // Excluir o projeto (as imagens da galeria serão excluídas automaticamente devido à restrição ON DELETE CASCADE)
+    console.log(`Deleting project with ID: ${projectId}`);
+    
+    // Primeiro, excluir todas as imagens da galeria
+    const { error: galleryError } = await supabase
+      .from('project_gallery')
+      .delete()
+      .eq('project_id', projectId);
+    
+    if (galleryError) {
+      console.error(`Erro ao excluir galeria do projeto ${projectId}:`, galleryError);
+      // Continuar mesmo com erro, pois pode ser que não haja imagens
+    }
+    
+    // Excluir o projeto
     const { error } = await supabase
       .from('projects')
       .delete()
@@ -167,6 +203,8 @@ export const deleteProject = async (projectId: string): Promise<Project[]> => {
       return await fetchProjects();
     }
 
+    console.log("Project and gallery successfully deleted");
+    
     // Buscar todos os projetos atualizados
     return await fetchProjects();
   } catch (error) {
@@ -189,6 +227,7 @@ export const reorderProjects = async (reorderedProjects: Project[]): Promise<voi
 // Site Configuration functions
 export const fetchSiteConfig = async (): Promise<SiteConfig> => {
   try {
+    console.log("Fetching site configuration...");
     const { data, error } = await supabase
       .from('site_config')
       .select('*')
@@ -200,6 +239,7 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
     }
 
     if (data) {
+      console.log("Site configuration retrieved successfully:", data);
       // Mapear o resultado para o formato esperado e garantir que socialLinks seja do tipo correto
       const socialLinksData = data.social_links as Json;
       
@@ -233,6 +273,7 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
         socialLinks
       };
     } else {
+      console.log("No site configuration found, using default");
       return getDefaultSiteConfig();
     }
   } catch (error) {
