@@ -203,14 +203,26 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
       // Mapear o resultado para o formato esperado e garantir que socialLinks seja do tipo correto
       const socialLinksData = data.social_links as Json;
       
-      const socialLinks: { linkedin?: string; github?: string; twitter?: string } = 
-        typeof socialLinksData === 'object' && socialLinksData !== null
-          ? {
-              linkedin: typeof socialLinksData.linkedin === 'string' ? socialLinksData.linkedin : undefined,
-              github: typeof socialLinksData.github === 'string' ? socialLinksData.github : undefined,
-              twitter: typeof socialLinksData.twitter === 'string' ? socialLinksData.twitter : undefined
-            }
-          : {};
+      // Inicializar um objeto vazio para os links sociais
+      const socialLinks: { linkedin?: string; github?: string; twitter?: string } = {};
+      
+      // Verificar se socialLinksData é um objeto e não null
+      if (socialLinksData && typeof socialLinksData === 'object' && !Array.isArray(socialLinksData)) {
+        // Agora sabemos que é um objeto, podemos acessar as propriedades com segurança
+        const links = socialLinksData as Record<string, Json>;
+        
+        if (links.linkedin && typeof links.linkedin === 'string') {
+          socialLinks.linkedin = links.linkedin;
+        }
+        
+        if (links.github && typeof links.github === 'string') {
+          socialLinks.github = links.github;
+        }
+        
+        if (links.twitter && typeof links.twitter === 'string') {
+          socialLinks.twitter = links.twitter;
+        }
+      }
       
       return {
         title: data.title,
