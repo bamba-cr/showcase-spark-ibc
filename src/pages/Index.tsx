@@ -30,7 +30,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title={siteConfig?.title} />
+      <Navbar title={siteConfig?.title} socialLinks={siteConfig?.socialLinks} />
       <HeroSection title={siteConfig?.title} subtitle={siteConfig?.subtitle} videoUrl={siteConfig?.featuredVideoUrl} />
       <Stats />
       <ProjectGallery />

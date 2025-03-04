@@ -17,24 +17,35 @@ export const HeroSection = ({
     <div id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-primary/80 z-10" />
-        <video
-          className="w-full h-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster="https://images.unsplash.com/photo-1469041797191-50ace28483c3"
-        >
-          <source 
-            src={videoUrl || "https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-heights-in-a-sunset-26070-large.mp4"} 
-            type="video/mp4" 
-          />
-          <img
-            src="https://images.unsplash.com/photo-1469041797191-50ace28483c3"
-            alt="Hero Background"
+        {videoUrl ? (
+          <iframe
             className="w-full h-full object-cover"
-          />
-        </video>
+            src={videoUrl}
+            title="Featured Video"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        ) : (
+          <video
+            className="w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="https://images.unsplash.com/photo-1469041797191-50ace28483c3"
+          >
+            <source 
+              src="https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-heights-in-a-sunset-26070-large.mp4" 
+              type="video/mp4" 
+            />
+            <img
+              src="https://images.unsplash.com/photo-1469041797191-50ace28483c3"
+              alt="Hero Background"
+              className="w-full h-full object-cover"
+            />
+          </video>
+        )}
       </div>
       
       <div className="relative z-20 text-center w-full max-w-3xl mx-auto px-4">

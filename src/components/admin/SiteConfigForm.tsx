@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,9 +7,11 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { SiteConfig } from "@/types/SiteConfig";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 
 type SiteConfigFormProps = {
   config: SiteConfig;
@@ -117,10 +120,21 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
                       <FormControl>
                         <Input placeholder="https://youtube.com/embed/..." {...field} />
                       </FormControl>
+                      <FormDescription>
+                        Use o formato de embed do YouTube: https://www.youtube.com/embed/VIDEO_ID
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+                
+                <Alert variant="outline" className="bg-muted/50">
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>
+                    Para vídeos do YouTube, use a URL de incorporação que começa com "https://www.youtube.com/embed/". 
+                    Você pode obter essa URL clicando em "Compartilhar" no YouTube, depois em "Incorporar" e copiando apenas a parte "src" do código.
+                  </AlertDescription>
+                </Alert>
                 
                 {form.watch("featuredVideoUrl") && (
                   <div className="mt-4">
