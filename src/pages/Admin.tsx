@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { ProjectMediaManager } from "@/components/admin/ProjectMediaManager";
 import { ProjectList } from "@/components/admin/ProjectList";
@@ -26,7 +25,6 @@ const Admin = () => {
   const [activeTab, setActiveTab] = useState("projects");
   const queryClient = useQueryClient();
 
-  // Fetch projects using react-query
   const { 
     data: projects = [], 
     isLoading: projectsLoading 
@@ -37,7 +35,6 @@ const Admin = () => {
     gcTime: 1000 * 60 * 10, // 10 minutos
   });
 
-  // Fetch site configuration using react-query
   const { 
     data: siteConfig, 
     isLoading: siteConfigLoading 
@@ -48,7 +45,6 @@ const Admin = () => {
     gcTime: 1000 * 60 * 10, // 10 minutos
   });
 
-  // Mutations for projects
   const createProjectMutation = useMutation({
     mutationFn: addProject,
     onSuccess: () => {
@@ -102,7 +98,6 @@ const Admin = () => {
     }
   });
 
-  // Mutation for site configuration
   const updateSiteConfigMutation = useMutation({
     mutationFn: (newConfig: SiteConfig) => saveSiteConfig(newConfig),
     onSuccess: () => {
@@ -112,44 +107,43 @@ const Admin = () => {
     onError: (error) => {
       console.error("Erro ao atualizar configurações do site:", error);
       toast.error("Erro ao atualizar configurações do site. Tente novamente.");
+      
+      queryClient.invalidateQueries({ queryKey: ['siteConfig'] });
     }
   });
 
-  // Handler to create a new project
   const handleCreateProject = (newProject: Omit<Project, "id" | "gallery">) => {
     createProjectMutation.mutate(newProject);
   };
 
-  // Handler to update a project
   const handleUpdateProject = (updatedProject: Project) => {
     updateProjectMutation.mutate(updatedProject);
   };
 
-  // Handler to remove a project
   const handleDeleteProject = (projectId: string) => {
     deleteProjectMutation.mutate(projectId);
   };
 
-  // Handler to select a project for editing
   const handleSelectProject = (project: Project) => {
     setSelectedProject(project);
     setActiveTab("media");
   };
 
-  // Handler to reorder projects
   const handleReorderProjects = (reorderedProjects: Project[]) => {
     reorderProjectsMutation.mutate(reorderedProjects);
-    // Reordenamos localmente também para uma experiência mais responsiva
     queryClient.setQueryData(['projects'], reorderedProjects);
   };
 
-  // Handler to update the site configuration
   const handleUpdateSiteConfig = (newConfig: SiteConfig) => {
     console.log("Atualizando configurações do site:", newConfig);
-    updateSiteConfigMutation.mutate(newConfig);
+    try {
+      updateSiteConfigMutation.mutate(newConfig);
+    } catch (error) {
+      console.error("Erro ao processar atualização de configurações:", error);
+      toast.error("Erro ao processar o formulário. Verifique os dados e tente novamente.");
+    }
   };
 
-  // Loading state
   if (projectsLoading || siteConfigLoading || !siteConfig) {
     return (
       <div className="container mx-auto px-4 py-8">

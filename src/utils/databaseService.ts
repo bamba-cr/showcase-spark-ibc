@@ -290,10 +290,15 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
     console.log("Salvando configuração:", config);
     
     // Verificar se já existe uma configuração
-    const { data } = await supabase
+    const { data, error: queryError } = await supabase
       .from('site_config')
       .select('id')
       .limit(1);
+      
+    if (queryError) {
+      console.error("Erro ao verificar configuração existente:", queryError);
+      throw queryError;
+    }
 
     // Prepara os dados para inserção/atualização no formato correto esperado pelo Supabase
     const configData = {
@@ -309,36 +314,34 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
     // Log dos dados formatados
     console.log("Dados formatados para salvar:", configData);
 
+    let result;
+    
     if (data && data.length > 0) {
+      console.log("Atualizando configuração existente com ID:", data[0].id);
       // Atualizar a configuração existente - usando upsert para garantir
-      const { error, data: updatedData } = await supabase
+      result = await supabase
         .from('site_config')
         .upsert({
           id: data[0].id,
           ...configData
         })
         .select();
-
-      if (error) {
-        console.error("Erro ao atualizar configuração do site:", error);
-        throw error;
-      } else {
-        console.log("Configuração atualizada com sucesso:", updatedData);
-      }
     } else {
+      console.log("Criando nova configuração");
       // Inserir uma nova configuração
-      const { error, data: insertedData } = await supabase
+      result = await supabase
         .from('site_config')
         .insert(configData)
         .select();
-
-      if (error) {
-        console.error("Erro ao inserir configuração do site:", error);
-        throw error;
-      } else {
-        console.log("Configuração inserida com sucesso:", insertedData);
-      }
     }
+    
+    // Verificar erro após operação
+    if (result.error) {
+      console.error("Erro na operação de salvar configuração:", result.error);
+      throw result.error;
+    }
+    
+    console.log("Operação concluída com sucesso:", result.data);
     
     // Forçar uma atualização dos dados após a operação para verificar se foi bem-sucedido
     const { data: verificationData, error: verificationError } = await supabase
