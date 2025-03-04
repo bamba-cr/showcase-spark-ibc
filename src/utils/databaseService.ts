@@ -245,45 +245,53 @@ export const getSiteConfig = fetchSiteConfig;
 
 export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
   try {
+    // Log do que está sendo enviado para depuração
+    console.log("Salvando configuração:", config);
+    
     // Verificar se já existe uma configuração
     const { data } = await supabase
       .from('site_config')
       .select('id')
       .limit(1);
 
+    // Prepara os dados para inserção/atualização no formato correto esperado pelo Supabase
+    const configData = {
+      title: config.title,
+      subtitle: config.subtitle,
+      featured_video_url: config.featuredVideoUrl,
+      contact_email: config.contactEmail,
+      contact_phone: config.contactPhone,
+      social_links: config.socialLinks, // Já está no formato correto de objeto JS
+      updated_at: new Date().toISOString()
+    };
+    
+    // Log dos dados formatados
+    console.log("Dados formatados para salvar:", configData);
+
     if (data && data.length > 0) {
       // Atualizar a configuração existente
-      const { error } = await supabase
+      const { error, data: updatedData } = await supabase
         .from('site_config')
-        .update({
-          title: config.title,
-          subtitle: config.subtitle,
-          featured_video_url: config.featuredVideoUrl,
-          contact_email: config.contactEmail,
-          contact_phone: config.contactPhone,
-          social_links: config.socialLinks,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', data[0].id);
+        .update(configData)
+        .eq('id', data[0].id)
+        .select();
 
       if (error) {
         console.error("Erro ao atualizar configuração do site:", error);
+      } else {
+        console.log("Configuração atualizada com sucesso:", updatedData);
       }
     } else {
       // Inserir uma nova configuração
-      const { error } = await supabase
+      const { error, data: insertedData } = await supabase
         .from('site_config')
-        .insert({
-          title: config.title,
-          subtitle: config.subtitle,
-          featured_video_url: config.featuredVideoUrl,
-          contact_email: config.contactEmail,
-          contact_phone: config.contactPhone,
-          social_links: config.socialLinks
-        });
+        .insert(configData)
+        .select();
 
       if (error) {
         console.error("Erro ao inserir configuração do site:", error);
+      } else {
+        console.log("Configuração inserida com sucesso:", insertedData);
       }
     }
   } catch (error) {
