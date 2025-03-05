@@ -1,11 +1,10 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Linkedin, Github, Twitter, Facebook, Instagram } from "lucide-react";
 import { Project } from "@/types/Project";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProjects, fetchSiteConfig } from "@/utils/databaseService";
 
-// Componente de galeria de imagens com rolagem moderna
 const ImageGallery = ({ images }: { images: string[] }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   
@@ -67,7 +66,6 @@ const ImageGallery = ({ images }: { images: string[] }) => {
   );
 };
 
-// Componente de cartão de projeto
 const ProjectCard = ({ project, onClick }: { project: Project; onClick: () => void }) => {
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -93,7 +91,6 @@ const ProjectCard = ({ project, onClick }: { project: Project; onClick: () => vo
   );
 };
 
-// Visualização detalhada de um projeto com galeria interativa
 const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => void }) => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -124,7 +121,6 @@ const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => 
           
           <p className="text-gray-600 mb-4 text-sm">{project.description}</p>
           
-          {/* Exibição de imagem principal com controles */}
           <div className="relative aspect-video mb-4 bg-gray-100 rounded-lg overflow-hidden">
             {project.gallery.length > 0 ? (
               <>
@@ -173,7 +169,6 @@ const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => 
             )}
           </div>
           
-          {/* Galeria de miniaturas */}
           <div className="grid grid-cols-5 gap-2 mb-4">
             {project.gallery.map((image, index) => (
               <div 
@@ -201,7 +196,6 @@ const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => 
   );
 };
 
-// Componente principal
 export const ProjectGallery = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
@@ -252,6 +246,67 @@ export const ProjectGallery = () => {
             ))}
           </div>
         )}
+        
+        <div className="mt-16 text-center">
+          <h3 className="text-xl font-semibold mb-4">Siga-nos nas redes sociais</h3>
+          <div className="flex justify-center space-x-6">
+            {siteConfig?.socialLinks?.linkedin && (
+              <a 
+                href={siteConfig.socialLinks.linkedin} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary-dark transition-colors"
+                aria-label="LinkedIn"
+              >
+                <Linkedin size={30} />
+              </a>
+            )}
+            {siteConfig?.socialLinks?.github && (
+              <a 
+                href={siteConfig.socialLinks.github} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary-dark transition-colors"
+                aria-label="GitHub"
+              >
+                <Github size={30} />
+              </a>
+            )}
+            {siteConfig?.socialLinks?.facebook && (
+              <a 
+                href={siteConfig.socialLinks.facebook} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary-dark transition-colors"
+                aria-label="Facebook"
+              >
+                <Facebook size={30} />
+              </a>
+            )}
+            {siteConfig?.socialLinks?.instagram && (
+              <a 
+                href={siteConfig.socialLinks.instagram} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary-dark transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram size={30} />
+              </a>
+            )}
+            {siteConfig?.socialLinks?.twitter && (
+              <a 
+                href={siteConfig.socialLinks.twitter} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary-dark transition-colors"
+                aria-label="Twitter"
+              >
+                <Twitter size={30} />
+              </a>
+            )}
+          </div>
+        </div>
       </div>
 
       <AnimatePresence>
