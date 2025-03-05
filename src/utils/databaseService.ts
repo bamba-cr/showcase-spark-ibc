@@ -7,7 +7,6 @@ import { Json } from "@/integrations/supabase/types";
 export const fetchProjects = async (): Promise<Project[]> => {
   try {
     console.log("Fetching projects...");
-    // Buscar todos os projetos
     const { data: projects, error: projectsError } = await supabase
       .from('projects')
       .select('*')
@@ -20,7 +19,6 @@ export const fetchProjects = async (): Promise<Project[]> => {
 
     console.log(`Fetched ${projects.length} projects successfully`);
 
-    // Para cada projeto, buscar as imagens da galeria
     const projectsWithGallery = await Promise.all(
       projects.map(async (project) => {
         const { data: galleryImages, error: galleryError } = await supabase
@@ -44,7 +42,6 @@ export const fetchProjects = async (): Promise<Project[]> => {
           } as Project;
         }
 
-        // Mapear os resultados para o formato esperado
         return {
           id: project.id,
           title: project.title,
@@ -72,7 +69,6 @@ export const addProject = async (project: Omit<Project, "id" | "gallery">): Prom
   try {
     console.log("Adding new project:", project);
     
-    // Preparar dados para inserção
     const projectData = {
       title: project.title,
       category: project.category,
@@ -85,7 +81,6 @@ export const addProject = async (project: Omit<Project, "id" | "gallery">): Prom
       updated_at: new Date().toISOString()
     };
     
-    // Inserir o novo projeto
     const { data: newProject, error } = await supabase
       .from('projects')
       .insert(projectData)
@@ -99,7 +94,6 @@ export const addProject = async (project: Omit<Project, "id" | "gallery">): Prom
 
     console.log("Project added successfully:", newProject);
     
-    // Buscar todos os projetos atualizados
     return await fetchProjects();
   } catch (error) {
     console.error("Erro ao adicionar projeto:", error);
@@ -111,7 +105,6 @@ export const updateProject = async (updatedProject: Project): Promise<Project[]>
   try {
     console.log("Updating project:", updatedProject);
     
-    // Preparar dados para atualização
     const projectData = {
       title: updatedProject.title,
       category: updatedProject.category,
@@ -123,7 +116,6 @@ export const updateProject = async (updatedProject: Project): Promise<Project[]>
       updated_at: new Date().toISOString()
     };
     
-    // Atualizar o projeto
     const { error: projectError } = await supabase
       .from('projects')
       .update(projectData)
@@ -136,10 +128,7 @@ export const updateProject = async (updatedProject: Project): Promise<Project[]>
 
     console.log("Project data updated successfully");
 
-    // Se houver imagens na galeria, atualizá-las
     if (updatedProject.gallery && updatedProject.gallery.length > 0) {
-      // Primeiro, excluir todas as imagens existentes
-      console.log(`Removing existing gallery images for project ${updatedProject.id}`);
       const { error: deleteError } = await supabase
         .from('project_gallery')
         .delete()
@@ -150,7 +139,6 @@ export const updateProject = async (updatedProject: Project): Promise<Project[]>
         return await fetchProjects();
       }
 
-      // Adicionar as novas imagens
       const galleryData = updatedProject.gallery.map((url, index) => ({
         project_id: updatedProject.id,
         image_url: url,
@@ -168,7 +156,6 @@ export const updateProject = async (updatedProject: Project): Promise<Project[]>
       }
     }
 
-    // Buscar todos os projetos atualizados
     return await fetchProjects();
   } catch (error) {
     console.error("Erro ao atualizar projeto:", error);
@@ -180,7 +167,6 @@ export const deleteProject = async (projectId: string): Promise<Project[]> => {
   try {
     console.log(`Deleting project with ID: ${projectId}`);
     
-    // Primeiro, excluir todas as imagens da galeria
     const { error: galleryError } = await supabase
       .from('project_gallery')
       .delete()
@@ -188,10 +174,8 @@ export const deleteProject = async (projectId: string): Promise<Project[]> => {
     
     if (galleryError) {
       console.error(`Erro ao excluir galeria do projeto ${projectId}:`, galleryError);
-      // Continuar mesmo com erro, pois pode ser que não haja imagens
     }
     
-    // Excluir o projeto
     const { error } = await supabase
       .from('projects')
       .delete()
@@ -204,7 +188,6 @@ export const deleteProject = async (projectId: string): Promise<Project[]> => {
 
     console.log("Project and gallery successfully deleted");
     
-    // Buscar todos os projetos atualizados
     return await fetchProjects();
   } catch (error) {
     console.error("Erro ao excluir projeto:", error);
@@ -213,10 +196,7 @@ export const deleteProject = async (projectId: string): Promise<Project[]> => {
 };
 
 export const reorderProjects = async (reorderedProjects: Project[]): Promise<void> => {
-  // Para reordenar projetos, podemos adicionar um campo 'position' na tabela 'projects'
-  // Por enquanto, mantemos a ordem no frontend
   try {
-    // Não faz nada no banco por enquanto, apenas registra a ordem no console
     console.log("Projetos reordenados:", reorderedProjects);
   } catch (error) {
     console.error("Erro ao reordenar projetos:", error);
@@ -239,10 +219,8 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
 
     if (data) {
       console.log("Site configuration retrieved successfully:", data);
-      // Mapear o resultado para o formato esperado e garantir que socialLinks seja do tipo correto
       const socialLinksData = data.social_links as Json;
       
-      // Inicializar um objeto vazio para os links sociais
       const socialLinks: { 
         linkedin?: string; 
         github?: string; 
@@ -251,9 +229,7 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
         instagram?: string;
       } = {};
       
-      // Verificar se socialLinksData é um objeto e não null
       if (socialLinksData && typeof socialLinksData === 'object' && !Array.isArray(socialLinksData)) {
-        // Agora sabemos que é um objeto, podemos acessar as propriedades com segurança
         const links = socialLinksData as Record<string, Json>;
         
         if (links.linkedin && typeof links.linkedin === 'string') {
@@ -277,14 +253,11 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
         }
       }
       
-      // Handle the featured_video_type field even if it doesn't exist in the database yet
-      const videoType = data.featured_video_type || "youtube";
-      
       return {
         title: data.title,
         subtitle: data.subtitle,
         featuredVideoUrl: data.featured_video_url || undefined,
-        featuredVideoType: videoType as "youtube" | "vimeo" | "custom",
+        featuredVideoType: data.featured_video_type as "youtube" | "vimeo" | "custom",
         contactEmail: data.contact_email,
         contactPhone: data.contact_phone || "",
         socialLinks
@@ -303,10 +276,8 @@ export const getSiteConfig = fetchSiteConfig;
 
 export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
   try {
-    // Log do que está sendo enviado para depuração
     console.log("Salvando configuração:", config);
     
-    // Verificar se já existe uma configuração
     const { data, error: queryError } = await supabase
       .from('site_config')
       .select('id')
@@ -317,7 +288,6 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
       throw queryError;
     }
 
-    // Prepara os dados para inserção/atualização no formato correto esperado pelo Supabase
     const configData = {
       title: config.title,
       subtitle: config.subtitle,
@@ -325,18 +295,16 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
       featured_video_type: config.featuredVideoType || "youtube",
       contact_email: config.contactEmail,
       contact_phone: config.contactPhone || null,
-      social_links: config.socialLinks || {}, // Ensure it's always an object
+      social_links: config.socialLinks || {},
       updated_at: new Date().toISOString()
     };
     
-    // Log dos dados formatados
     console.log("Dados formatados para salvar:", configData);
 
     let result;
     
     if (data && data.length > 0) {
       console.log("Atualizando configuração existente com ID:", data[0].id);
-      // Atualizar a configuração existente - usando upsert para garantir
       result = await supabase
         .from('site_config')
         .upsert({
@@ -346,14 +314,12 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
         .select();
     } else {
       console.log("Criando nova configuração");
-      // Inserir uma nova configuração
       result = await supabase
         .from('site_config')
         .insert(configData)
         .select();
     }
     
-    // Verificar erro após operação
     if (result.error) {
       console.error("Erro na operação de salvar configuração:", result.error);
       throw result.error;
@@ -361,7 +327,6 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
     
     console.log("Operação concluída com sucesso:", result.data);
     
-    // Forçar uma atualização dos dados após a operação para verificar se foi bem-sucedido
     const { data: verificationData, error: verificationError } = await supabase
       .from('site_config')
       .select('*')
@@ -378,7 +343,6 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
   }
 };
 
-// Default values (fallback)
 const getDefaultSiteConfig = (): SiteConfig => {
   return {
     title: "Meu Portfólio Profissional",
@@ -399,7 +363,7 @@ const getDefaultSiteConfig = (): SiteConfig => {
 
 export default {
   getProjects,
-  saveProjects: () => {}, // Não é mais necessário
+  saveProjects: () => {},
   addProject,
   updateProject,
   deleteProject,

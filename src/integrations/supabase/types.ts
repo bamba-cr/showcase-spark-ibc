@@ -84,6 +84,7 @@ export type Database = {
         Row: {
           contact_email: string
           contact_phone: string | null
+          featured_video_type: string | null
           featured_video_url: string | null
           id: string
           social_links: Json | null
@@ -94,6 +95,7 @@ export type Database = {
         Insert: {
           contact_email: string
           contact_phone?: string | null
+          featured_video_type?: string | null
           featured_video_url?: string | null
           id?: string
           social_links?: Json | null
@@ -104,6 +106,7 @@ export type Database = {
         Update: {
           contact_email?: string
           contact_phone?: string | null
+          featured_video_type?: string | null
           featured_video_url?: string | null
           id?: string
           social_links?: Json | null
