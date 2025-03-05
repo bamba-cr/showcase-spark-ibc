@@ -128,7 +128,7 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
                   )}
                 />
                 
-                <Alert variant="outline" className="bg-muted/50">
+                <Alert variant="default" className="bg-muted/50">
                   <Info className="h-4 w-4" />
                   <AlertDescription>
                     Para vídeos do YouTube, use a URL de incorporação que começa com "https://www.youtube.com/embed/". 
