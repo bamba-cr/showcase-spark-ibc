@@ -32,6 +32,7 @@ export const Navbar = ({
   const menuItems = [
     { label: "Início", href: "#home" },
     { label: "Projetos", href: "#projects" },
+    { label: "Estatísticas", href: "#stats" },
   ];
 
   return (
@@ -204,3 +205,4 @@ export const Navbar = ({
     </nav>
   );
 };
+

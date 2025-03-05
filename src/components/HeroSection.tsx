@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
@@ -89,9 +88,6 @@ export const HeroSection = ({
           <div className="flex flex-col xs:flex-row gap-3 justify-center">
             <a href="#projects" className="px-6 py-2 rounded-full bg-white text-primary text-sm">
               Projetos
-            </a>
-            <a href="#contact" className="px-6 py-2 rounded-full bg-primary-light text-white text-sm">
-              Contato
             </a>
           </div>
         </motion.div>
