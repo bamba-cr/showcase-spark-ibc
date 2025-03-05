@@ -1,18 +1,25 @@
+
 import { motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Facebook, Instagram, Globe } from "lucide-react";
 
 interface HeroSectionProps {
   title?: string;
   subtitle?: string;
   videoUrl?: string;
   videoType?: "youtube" | "vimeo" | "custom";
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    website?: string;
+  };
 }
 
 export const HeroSection = ({ 
   title = "Instituto IBC", 
   subtitle = "Transformando vidas", 
   videoUrl,
-  videoType = "youtube"
+  videoType = "youtube",
+  socialLinks = {}
 }: HeroSectionProps) => {
   const renderVideo = () => {
     if (!videoUrl) {
@@ -69,6 +76,43 @@ export const HeroSection = ({
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-primary/80 z-10" />
         {renderVideo()}
+      </div>
+      
+      {/* Social Media Icons */}
+      <div className="absolute top-24 right-6 z-30 flex flex-col space-y-4">
+        {socialLinks?.facebook && (
+          <a 
+            href={socialLinks.facebook} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-all"
+            aria-label="Facebook"
+          >
+            <Facebook className="text-white w-6 h-6" />
+          </a>
+        )}
+        {socialLinks?.instagram && (
+          <a 
+            href={socialLinks.instagram} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-all"
+            aria-label="Instagram"
+          >
+            <Instagram className="text-white w-6 h-6" />
+          </a>
+        )}
+        {socialLinks?.website && (
+          <a 
+            href={socialLinks.website} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-all"
+            aria-label="Website"
+          >
+            <Globe className="text-white w-6 h-6" />
+          </a>
+        )}
       </div>
       
       <div className="relative z-20 text-center w-full max-w-3xl mx-auto px-4">

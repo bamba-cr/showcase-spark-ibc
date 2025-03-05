@@ -12,5 +12,6 @@ export type SiteConfig = {
     twitter?: string;
     facebook?: string;
     instagram?: string;
+    website?: string; // Added website field (optional)
   };
 };

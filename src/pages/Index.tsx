@@ -28,6 +28,13 @@ const Index = () => {
     );
   }
 
+  // Extract only the needed social links
+  const heroSocialLinks = {
+    facebook: siteConfig?.socialLinks?.facebook,
+    instagram: siteConfig?.socialLinks?.instagram,
+    website: siteConfig?.socialLinks?.linkedin // Using LinkedIn as the "website" for now
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar title={siteConfig?.title} socialLinks={siteConfig?.socialLinks} />
@@ -36,6 +43,7 @@ const Index = () => {
         subtitle={siteConfig?.subtitle} 
         videoUrl={siteConfig?.featuredVideoUrl}
         videoType={siteConfig?.featuredVideoType} 
+        socialLinks={heroSocialLinks}
       />
       <Stats />
       <ProjectGallery />
