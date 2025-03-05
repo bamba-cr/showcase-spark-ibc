@@ -1,4 +1,3 @@
-
 import { Project } from "@/types/Project";
 import { SiteConfig } from "@/types/SiteConfig";
 import { supabase } from "@/integrations/supabase/client";
@@ -278,11 +277,14 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
         }
       }
       
+      // Handle the featured_video_type field even if it doesn't exist in the database yet
+      const videoType = data.featured_video_type || "youtube";
+      
       return {
         title: data.title,
         subtitle: data.subtitle,
         featuredVideoUrl: data.featured_video_url || undefined,
-        featuredVideoType: data.featured_video_type || "youtube",
+        featuredVideoType: videoType as "youtube" | "vimeo" | "custom",
         contactEmail: data.contact_email,
         contactPhone: data.contact_phone || "",
         socialLinks

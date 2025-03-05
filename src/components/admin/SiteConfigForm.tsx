@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,7 +35,9 @@ const siteConfigSchema = z.object({
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
-  const [videoType, setVideoType] = useState(config?.featuredVideoType || "youtube");
+  const [videoType, setVideoType] = useState<"youtube" | "vimeo" | "custom">(
+    config?.featuredVideoType || "youtube"
+  );
 
   const defaultValues = {
     title: config?.title || "",
@@ -62,8 +63,8 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
   // Atualiza o tipo de vídeo quando muda no form
   React.useEffect(() => {
     const subscription = form.watch((value, { name }) => {
-      if (name === "featuredVideoType") {
-        setVideoType(value.featuredVideoType as string);
+      if (name === "featuredVideoType" && value.featuredVideoType) {
+        setVideoType(value.featuredVideoType as "youtube" | "vimeo" | "custom");
       }
     });
     return () => subscription.unsubscribe();
