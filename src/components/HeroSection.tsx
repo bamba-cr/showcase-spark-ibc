@@ -6,46 +6,70 @@ interface HeroSectionProps {
   title?: string;
   subtitle?: string;
   videoUrl?: string;
+  videoType?: "youtube" | "vimeo" | "custom";
 }
 
 export const HeroSection = ({ 
   title = "Instituto IBC", 
   subtitle = "Transformando vidas", 
-  videoUrl 
+  videoUrl,
+  videoType = "youtube"
 }: HeroSectionProps) => {
+  const renderVideo = () => {
+    if (!videoUrl) {
+      return (
+        <video
+          className="w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="https://images.unsplash.com/photo-1469041797191-50ace28483c3"
+        >
+          <source 
+            src="https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-heights-in-a-sunset-26070-large.mp4" 
+            type="video/mp4" 
+          />
+          <img
+            src="https://images.unsplash.com/photo-1469041797191-50ace28483c3"
+            alt="Hero Background"
+            className="w-full h-full object-cover"
+          />
+        </video>
+      );
+    }
+
+    if (videoType === "custom") {
+      return (
+        <video
+          className="w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+        >
+          <source src={videoUrl} type="video/mp4" />
+        </video>
+      );
+    }
+
+    return (
+      <iframe
+        className="w-full h-full object-cover"
+        src={videoUrl}
+        title="Featured Video"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      ></iframe>
+    );
+  };
+
   return (
     <div id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-primary/80 z-10" />
-        {videoUrl ? (
-          <iframe
-            className="w-full h-full object-cover"
-            src={videoUrl}
-            title="Featured Video"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        ) : (
-          <video
-            className="w-full h-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster="https://images.unsplash.com/photo-1469041797191-50ace28483c3"
-          >
-            <source 
-              src="https://assets.mixkit.co/videos/preview/mixkit-set-of-plateaus-seen-from-the-heights-in-a-sunset-26070-large.mp4" 
-              type="video/mp4" 
-            />
-            <img
-              src="https://images.unsplash.com/photo-1469041797191-50ace28483c3"
-              alt="Hero Background"
-              className="w-full h-full object-cover"
-            />
-          </video>
-        )}
+        {renderVideo()}
       </div>
       
       <div className="relative z-20 text-center w-full max-w-3xl mx-auto px-4">

@@ -244,7 +244,13 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
       const socialLinksData = data.social_links as Json;
       
       // Inicializar um objeto vazio para os links sociais
-      const socialLinks: { linkedin?: string; github?: string; twitter?: string } = {};
+      const socialLinks: { 
+        linkedin?: string; 
+        github?: string; 
+        twitter?: string;
+        facebook?: string;
+        instagram?: string;
+      } = {};
       
       // Verificar se socialLinksData é um objeto e não null
       if (socialLinksData && typeof socialLinksData === 'object' && !Array.isArray(socialLinksData)) {
@@ -262,12 +268,21 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
         if (links.twitter && typeof links.twitter === 'string') {
           socialLinks.twitter = links.twitter;
         }
+        
+        if (links.facebook && typeof links.facebook === 'string') {
+          socialLinks.facebook = links.facebook;
+        }
+        
+        if (links.instagram && typeof links.instagram === 'string') {
+          socialLinks.instagram = links.instagram;
+        }
       }
       
       return {
         title: data.title,
         subtitle: data.subtitle,
         featuredVideoUrl: data.featured_video_url || undefined,
+        featuredVideoType: data.featured_video_type || "youtube",
         contactEmail: data.contact_email,
         contactPhone: data.contact_phone || "",
         socialLinks
@@ -305,6 +320,7 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
       title: config.title,
       subtitle: config.subtitle,
       featured_video_url: config.featuredVideoUrl || null,
+      featured_video_type: config.featuredVideoType || "youtube",
       contact_email: config.contactEmail,
       contact_phone: config.contactPhone || null,
       social_links: config.socialLinks || {}, // Ensure it's always an object
@@ -366,12 +382,15 @@ const getDefaultSiteConfig = (): SiteConfig => {
     title: "Meu Portfólio Profissional",
     subtitle: "Desenvolvedor Web & Designer",
     featuredVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    featuredVideoType: "youtube",
     contactEmail: "contato@exemplo.com",
     contactPhone: "+55 11 12345-6789",
     socialLinks: {
       linkedin: "https://linkedin.com/in/exemplo",
       github: "https://github.com/exemplo",
-      twitter: "https://twitter.com/exemplo"
+      twitter: "https://twitter.com/exemplo",
+      facebook: "",
+      instagram: ""
     }
   };
 };

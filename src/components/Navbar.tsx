@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { Menu, X, Linkedin, Github, Twitter } from "lucide-react";
+import { Menu, X, Linkedin, Github, Twitter, Facebook, Instagram } from "lucide-react";
 
 interface NavbarProps {
   title?: string;
@@ -8,6 +8,8 @@ interface NavbarProps {
     linkedin?: string;
     github?: string;
     twitter?: string;
+    facebook?: string;
+    instagram?: string;
   };
 }
 
@@ -30,7 +32,6 @@ export const Navbar = ({
   const menuItems = [
     { label: "Início", href: "#home" },
     { label: "Projetos", href: "#projects" },
-    { label: "Contato", href: "#contact" },
   ];
 
   return (
@@ -63,6 +64,7 @@ export const Navbar = ({
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={isScrolled ? "text-primary" : "text-white"}
+                  aria-label="LinkedIn"
                 >
                   <Linkedin size={20} />
                 </a>
@@ -73,6 +75,7 @@ export const Navbar = ({
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={isScrolled ? "text-primary" : "text-white"}
+                  aria-label="GitHub"
                 >
                   <Github size={20} />
                 </a>
@@ -83,8 +86,31 @@ export const Navbar = ({
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={isScrolled ? "text-primary" : "text-white"}
+                  aria-label="Twitter"
                 >
                   <Twitter size={20} />
+                </a>
+              )}
+              {socialLinks?.facebook && (
+                <a 
+                  href={socialLinks.facebook} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={isScrolled ? "text-primary" : "text-white"}
+                  aria-label="Facebook"
+                >
+                  <Facebook size={20} />
+                </a>
+              )}
+              {socialLinks?.instagram && (
+                <a 
+                  href={socialLinks.instagram} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={isScrolled ? "text-primary" : "text-white"}
+                  aria-label="Instagram"
+                >
+                  <Instagram size={20} />
                 </a>
               )}
             </div>
@@ -121,6 +147,7 @@ export const Navbar = ({
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-primary"
+                    aria-label="LinkedIn"
                   >
                     <Linkedin size={20} />
                   </a>
@@ -131,6 +158,7 @@ export const Navbar = ({
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-primary"
+                    aria-label="GitHub"
                   >
                     <Github size={20} />
                   </a>
@@ -141,8 +169,31 @@ export const Navbar = ({
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-primary"
+                    aria-label="Twitter"
                   >
                     <Twitter size={20} />
+                  </a>
+                )}
+                {socialLinks?.facebook && (
+                  <a 
+                    href={socialLinks.facebook} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary"
+                    aria-label="Facebook"
+                  >
+                    <Facebook size={20} />
+                  </a>
+                )}
+                {socialLinks?.instagram && (
+                  <a 
+                    href={socialLinks.instagram} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary"
+                    aria-label="Instagram"
+                  >
+                    <Instagram size={20} />
                   </a>
                 )}
               </div>

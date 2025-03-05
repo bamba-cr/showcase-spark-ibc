@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { SiteConfig } from "@/types/SiteConfig";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type SiteConfigFormProps = {
   config: SiteConfig;
@@ -22,26 +23,34 @@ const siteConfigSchema = z.object({
   title: z.string().min(3, { message: "O título deve ter pelo menos 3 caracteres" }),
   subtitle: z.string().min(3, { message: "O subtítulo deve ter pelo menos 3 caracteres" }),
   featuredVideoUrl: z.string().url({ message: "URL do vídeo inválida" }).optional().or(z.literal("")),
+  featuredVideoType: z.enum(["youtube", "vimeo", "custom"]).default("youtube"),
   contactEmail: z.string().email({ message: "Email inválido" }),
   contactPhone: z.string().min(10, { message: "Telefone inválido" }),
   socialLinks: z.object({
     linkedin: z.string().url({ message: "URL do LinkedIn inválida" }).optional().or(z.literal("")),
     github: z.string().url({ message: "URL do Github inválida" }).optional().or(z.literal("")),
-    twitter: z.string().url({ message: "URL do Twitter inválida" }).optional().or(z.literal(""))
+    twitter: z.string().url({ message: "URL do Twitter inválida" }).optional().or(z.literal("")),
+    facebook: z.string().url({ message: "URL do Facebook inválida" }).optional().or(z.literal("")),
+    instagram: z.string().url({ message: "URL do Instagram inválida" }).optional().or(z.literal(""))
   })
 });
 
 export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
+  const [videoType, setVideoType] = useState(config?.featuredVideoType || "youtube");
+
   const defaultValues = {
     title: config?.title || "",
     subtitle: config?.subtitle || "",
     featuredVideoUrl: config?.featuredVideoUrl || "",
+    featuredVideoType: config?.featuredVideoType || "youtube",
     contactEmail: config?.contactEmail || "",
     contactPhone: config?.contactPhone || "",
     socialLinks: {
       linkedin: config?.socialLinks?.linkedin || "",
       github: config?.socialLinks?.github || "",
       twitter: config?.socialLinks?.twitter || "",
+      facebook: config?.socialLinks?.facebook || "",
+      instagram: config?.socialLinks?.instagram || "",
     }
   };
 
@@ -50,17 +59,30 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
     defaultValues,
   });
 
+  // Atualiza o tipo de vídeo quando muda no form
+  React.useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "featuredVideoType") {
+        setVideoType(value.featuredVideoType as string);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
+
   const handleSubmit = (data: z.infer<typeof siteConfigSchema>) => {
     const siteConfig: SiteConfig = {
       title: data.title,
       subtitle: data.subtitle,
       featuredVideoUrl: data.featuredVideoUrl,
+      featuredVideoType: data.featuredVideoType,
       contactEmail: data.contactEmail,
       contactPhone: data.contactPhone,
       socialLinks: {
         linkedin: data.socialLinks.linkedin,
         github: data.socialLinks.github,
-        twitter: data.socialLinks.twitter
+        twitter: data.socialLinks.twitter,
+        facebook: data.socialLinks.facebook,
+        instagram: data.socialLinks.instagram
       }
     };
     
@@ -113,15 +135,56 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
                 
                 <FormField
                   control={form.control}
+                  name="featuredVideoType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de Vídeo</FormLabel>
+                      <FormControl>
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          className="flex flex-col space-y-1"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="youtube" id="youtube" />
+                            <Label htmlFor="youtube">YouTube</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="vimeo" id="vimeo" />
+                            <Label htmlFor="vimeo">Vimeo</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="custom" id="custom" />
+                            <Label htmlFor="custom">Vídeo Personalizado</Label>
+                          </div>
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
                   name="featuredVideoUrl"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>URL do Vídeo em Destaque</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://youtube.com/embed/..." {...field} />
+                        <Input placeholder={
+                          videoType === "youtube" 
+                            ? "https://www.youtube.com/embed/VIDEO_ID" 
+                            : videoType === "vimeo" 
+                              ? "https://player.vimeo.com/video/VIDEO_ID" 
+                              : "https://example.com/video.mp4"
+                        } {...field} />
                       </FormControl>
                       <FormDescription>
-                        Use o formato de embed do YouTube: https://www.youtube.com/embed/VIDEO_ID
+                        {videoType === "youtube" 
+                          ? "Use o formato de embed do YouTube: https://www.youtube.com/embed/VIDEO_ID" 
+                          : videoType === "vimeo" 
+                            ? "Use o formato de embed do Vimeo: https://player.vimeo.com/video/VIDEO_ID" 
+                            : "Insira a URL direta para um arquivo de vídeo MP4"}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -131,8 +194,23 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
                 <Alert variant="default" className="bg-muted/50">
                   <Info className="h-4 w-4" />
                   <AlertDescription>
-                    Para vídeos do YouTube, use a URL de incorporação que começa com "https://www.youtube.com/embed/". 
-                    Você pode obter essa URL clicando em "Compartilhar" no YouTube, depois em "Incorporar" e copiando apenas a parte "src" do código.
+                    {videoType === "youtube" && (
+                      <>
+                        Para vídeos do YouTube, use a URL de incorporação que começa com "https://www.youtube.com/embed/". 
+                        Você pode obter essa URL clicando em "Compartilhar" no YouTube, depois em "Incorporar" e copiando apenas a parte "src" do código.
+                      </>
+                    )}
+                    {videoType === "vimeo" && (
+                      <>
+                        Para vídeos do Vimeo, use a URL de incorporação que começa com "https://player.vimeo.com/video/". 
+                        Você pode obter essa URL clicando em "Compartilhar" no Vimeo, depois em "Incorporar" e copiando apenas a parte "src" do código.
+                      </>
+                    )}
+                    {videoType === "custom" && (
+                      <>
+                        Para vídeos personalizados, insira a URL direta do arquivo de vídeo (formato MP4 recomendado).
+                      </>
+                    )}
                   </AlertDescription>
                 </Alert>
                 
@@ -217,6 +295,34 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
                       <FormLabel>Twitter</FormLabel>
                       <FormControl>
                         <Input placeholder="https://twitter.com/seu-perfil" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="socialLinks.facebook"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Facebook</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://facebook.com/seu-perfil" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="socialLinks.instagram"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Instagram</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://instagram.com/seu-perfil" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
