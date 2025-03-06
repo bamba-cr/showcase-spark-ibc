@@ -7,7 +7,7 @@ interface HeroSectionProps {
   subtitle?: string;
   videoUrl?: string;
   videoType?: "youtube" | "vimeo" | "custom";
-  logoUrl?: string; // New prop for logo image
+  logoUrl?: string;
   socialLinks?: {
     facebook?: string;
     instagram?: string;
@@ -20,7 +20,7 @@ export const HeroSection = ({
   subtitle = "Transformando vidas", 
   videoUrl,
   videoType = "youtube",
-  logoUrl, // Add the logoUrl prop
+  logoUrl,
   socialLinks = {}
 }: HeroSectionProps) => {
   const renderVideo = () => {
@@ -86,16 +86,20 @@ export const HeroSection = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          {/* Logo Image */}
+          {/* Logo Image - Responsive sizing */}
           {logoUrl && (
-            <div className="mb-4 flex justify-center">
+            <div className="mb-6 flex justify-center">
               <motion.img 
                 src={logoUrl} 
                 alt="Logo" 
-                className="h-28 object-contain" 
+                className="w-auto max-w-[85%] sm:max-w-[70%] md:max-w-[60%] lg:max-w-[50%] h-auto mx-auto object-contain rounded-lg shadow-lg" 
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
+                style={{ 
+                  minHeight: "80px", 
+                  maxHeight: "200px" 
+                }}
               />
             </div>
           )}
@@ -160,8 +164,6 @@ export const HeroSection = ({
           <ChevronDown className="text-white w-6 h-6" />
         </motion.div>
       </div>
-      
-      {/* Removed the absolute positioned social icons from top-right */}
     </div>
   );
 };
