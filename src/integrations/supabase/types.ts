@@ -87,6 +87,7 @@ export type Database = {
           featured_video_type: string | null
           featured_video_url: string | null
           id: string
+          logo_url: string | null
           social_links: Json | null
           subtitle: string
           title: string
@@ -98,6 +99,7 @@ export type Database = {
           featured_video_type?: string | null
           featured_video_url?: string | null
           id?: string
+          logo_url?: string | null
           social_links?: Json | null
           subtitle: string
           title: string
@@ -109,6 +111,7 @@ export type Database = {
           featured_video_type?: string | null
           featured_video_url?: string | null
           id?: string
+          logo_url?: string | null
           social_links?: Json | null
           subtitle?: string
           title?: string
