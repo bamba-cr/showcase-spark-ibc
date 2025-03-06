@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronLeft, ChevronRight, Linkedin, Github, Twitter, Facebook, Instagram } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Facebook, Instagram, Globe } from "lucide-react";
 import { Project } from "@/types/Project";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProjects, fetchSiteConfig } from "@/utils/databaseService";
@@ -218,9 +218,45 @@ export const ProjectGallery = () => {
   return (
     <section id="projects" className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-8">
+        <h2 className="text-3xl font-bold text-center mb-2">
           {siteConfig?.title ? `Projetos - ${siteConfig.title}` : "Projetos"}
         </h2>
+
+        <div className="flex justify-center space-x-6 mb-8">
+          {siteConfig?.socialLinks?.facebook && (
+            <a 
+              href={siteConfig.socialLinks.facebook} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary-dark transition-colors"
+              aria-label="Facebook"
+            >
+              <Facebook size={30} />
+            </a>
+          )}
+          {siteConfig?.socialLinks?.instagram && (
+            <a 
+              href={siteConfig.socialLinks.instagram} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary-dark transition-colors"
+              aria-label="Instagram"
+            >
+              <Instagram size={30} />
+            </a>
+          )}
+          {siteConfig?.socialLinks?.website && (
+            <a 
+              href={siteConfig.socialLinks.website} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary-dark transition-colors"
+              aria-label="Website"
+            >
+              <Globe size={30} />
+            </a>
+          )}
+        </div>
 
         {projectsLoading ? (
           <div className="text-center py-12">
@@ -246,67 +282,6 @@ export const ProjectGallery = () => {
             ))}
           </div>
         )}
-        
-        <div className="mt-16 text-center">
-          <h3 className="text-xl font-semibold mb-4">Siga-nos nas redes sociais</h3>
-          <div className="flex justify-center space-x-6">
-            {siteConfig?.socialLinks?.linkedin && (
-              <a 
-                href={siteConfig.socialLinks.linkedin} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary-dark transition-colors"
-                aria-label="LinkedIn"
-              >
-                <Linkedin size={30} />
-              </a>
-            )}
-            {siteConfig?.socialLinks?.github && (
-              <a 
-                href={siteConfig.socialLinks.github} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary-dark transition-colors"
-                aria-label="GitHub"
-              >
-                <Github size={30} />
-              </a>
-            )}
-            {siteConfig?.socialLinks?.facebook && (
-              <a 
-                href={siteConfig.socialLinks.facebook} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary-dark transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook size={30} />
-              </a>
-            )}
-            {siteConfig?.socialLinks?.instagram && (
-              <a 
-                href={siteConfig.socialLinks.instagram} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary-dark transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram size={30} />
-              </a>
-            )}
-            {siteConfig?.socialLinks?.twitter && (
-              <a 
-                href={siteConfig.socialLinks.twitter} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:text-primary-dark transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter size={30} />
-              </a>
-            )}
-          </div>
-        </div>
       </div>
 
       <AnimatePresence>

@@ -28,16 +28,16 @@ const Index = () => {
     );
   }
 
-  // Extract only the needed social links
+  // Extract only the needed social links for the hero section
   const heroSocialLinks = {
     facebook: siteConfig?.socialLinks?.facebook,
     instagram: siteConfig?.socialLinks?.instagram,
-    website: siteConfig?.socialLinks?.linkedin // Using LinkedIn as the "website" for now
+    website: siteConfig?.socialLinks?.website // Using the website field directly
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title={siteConfig?.title} socialLinks={siteConfig?.socialLinks} />
+      <Navbar title={siteConfig?.title} />
       <HeroSection 
         title={siteConfig?.title} 
         subtitle={siteConfig?.subtitle} 

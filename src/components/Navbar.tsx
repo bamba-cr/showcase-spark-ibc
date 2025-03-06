@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { Menu, X, Linkedin, Github, Twitter, Facebook, Instagram } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 interface NavbarProps {
   title?: string;
@@ -46,7 +46,7 @@ export const Navbar = ({
           </a>
 
           <div className="hidden md:flex items-center">
-            <div className="flex space-x-6 mr-8">
+            <div className="flex space-x-6">
               {menuItems.map((item) => (
                 <a
                   key={item.label}
@@ -56,64 +56,6 @@ export const Navbar = ({
                   {item.label}
                 </a>
               ))}
-            </div>
-            
-            <div className="flex space-x-4">
-              {socialLinks?.linkedin && (
-                <a 
-                  href={socialLinks.linkedin} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className={isScrolled ? "text-primary" : "text-white"}
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin size={20} />
-                </a>
-              )}
-              {socialLinks?.github && (
-                <a 
-                  href={socialLinks.github} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className={isScrolled ? "text-primary" : "text-white"}
-                  aria-label="GitHub"
-                >
-                  <Github size={20} />
-                </a>
-              )}
-              {socialLinks?.twitter && (
-                <a 
-                  href={socialLinks.twitter} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className={isScrolled ? "text-primary" : "text-white"}
-                  aria-label="Twitter"
-                >
-                  <Twitter size={20} />
-                </a>
-              )}
-              {socialLinks?.facebook && (
-                <a 
-                  href={socialLinks.facebook} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className={isScrolled ? "text-primary" : "text-white"}
-                  aria-label="Facebook"
-                >
-                  <Facebook size={20} />
-                </a>
-              )}
-              {socialLinks?.instagram && (
-                <a 
-                  href={socialLinks.instagram} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className={isScrolled ? "text-primary" : "text-white"}
-                  aria-label="Instagram"
-                >
-                  <Instagram size={20} />
-                </a>
-              )}
             </div>
           </div>
 
@@ -140,64 +82,6 @@ export const Navbar = ({
                   {item.label}
                 </a>
               ))}
-              
-              <div className="flex space-x-4 py-2">
-                {socialLinks?.linkedin && (
-                  <a 
-                    href={socialLinks.linkedin} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-primary"
-                    aria-label="LinkedIn"
-                  >
-                    <Linkedin size={20} />
-                  </a>
-                )}
-                {socialLinks?.github && (
-                  <a 
-                    href={socialLinks.github} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-primary"
-                    aria-label="GitHub"
-                  >
-                    <Github size={20} />
-                  </a>
-                )}
-                {socialLinks?.twitter && (
-                  <a 
-                    href={socialLinks.twitter} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-primary"
-                    aria-label="Twitter"
-                  >
-                    <Twitter size={20} />
-                  </a>
-                )}
-                {socialLinks?.facebook && (
-                  <a 
-                    href={socialLinks.facebook} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-primary"
-                    aria-label="Facebook"
-                  >
-                    <Facebook size={20} />
-                  </a>
-                )}
-                {socialLinks?.instagram && (
-                  <a 
-                    href={socialLinks.instagram} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-primary"
-                    aria-label="Instagram"
-                  >
-                    <Instagram size={20} />
-                  </a>
-                )}
-              </div>
             </div>
           </div>
         </div>
