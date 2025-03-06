@@ -78,43 +78,6 @@ export const HeroSection = ({
         {renderVideo()}
       </div>
       
-      {/* Social Media Icons */}
-      <div className="absolute top-24 right-6 z-30 flex flex-col space-y-4">
-        {socialLinks?.facebook && (
-          <a 
-            href={socialLinks.facebook} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-all"
-            aria-label="Facebook"
-          >
-            <Facebook className="text-white w-6 h-6" />
-          </a>
-        )}
-        {socialLinks?.instagram && (
-          <a 
-            href={socialLinks.instagram} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-all"
-            aria-label="Instagram"
-          >
-            <Instagram className="text-white w-6 h-6" />
-          </a>
-        )}
-        {socialLinks?.website && (
-          <a 
-            href={socialLinks.website} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-all"
-            aria-label="Website"
-          >
-            <Globe className="text-white w-6 h-6" />
-          </a>
-        )}
-      </div>
-      
       <div className="relative z-20 text-center w-full max-w-3xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -125,9 +88,46 @@ export const HeroSection = ({
             {title}
           </h1>
           
-          <p className="text-lg text-white/90 mb-6">
+          <p className="text-lg text-white/90 mb-4">
             {subtitle}
           </p>
+          
+          {/* Social Media Links now placed below subtitle */}
+          <div className="flex justify-center space-x-4 mb-6">
+            {socialLinks?.facebook && (
+              <a 
+                href={socialLinks.facebook} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-all"
+                aria-label="Facebook"
+              >
+                <Facebook className="text-white w-6 h-6" />
+              </a>
+            )}
+            {socialLinks?.instagram && (
+              <a 
+                href={socialLinks.instagram} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-all"
+                aria-label="Instagram"
+              >
+                <Instagram className="text-white w-6 h-6" />
+              </a>
+            )}
+            {socialLinks?.website && (
+              <a 
+                href={socialLinks.website} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-white/20 hover:bg-white/40 p-2 rounded-full backdrop-blur-sm transition-all"
+                aria-label="Website"
+              >
+                <Globe className="text-white w-6 h-6" />
+              </a>
+            )}
+          </div>
           
           <div className="flex flex-col xs:flex-row gap-3 justify-center">
             <a href="#projects" className="px-6 py-2 rounded-full bg-white text-primary text-sm">
@@ -144,6 +144,8 @@ export const HeroSection = ({
           <ChevronDown className="text-white w-6 h-6" />
         </motion.div>
       </div>
+      
+      {/* Removed the absolute positioned social icons from top-right */}
     </div>
   );
 };
