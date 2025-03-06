@@ -2,6 +2,7 @@
 export type SiteConfig = {
   title: string;
   subtitle: string;
+  logoUrl?: string; // Added logoUrl field
   featuredVideoUrl?: string;
   featuredVideoType?: "youtube" | "vimeo" | "custom";
   contactEmail: string;
@@ -12,6 +13,6 @@ export type SiteConfig = {
     twitter?: string;
     facebook?: string;
     instagram?: string;
-    website?: string; // Added website field (optional)
+    website?: string;
   };
 };

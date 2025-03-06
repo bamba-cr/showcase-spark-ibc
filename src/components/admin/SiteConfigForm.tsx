@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { SiteConfig } from "@/types/SiteConfig";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info } from "lucide-react";
+import { Info, Image } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type SiteConfigFormProps = {
@@ -21,6 +22,7 @@ type SiteConfigFormProps = {
 const siteConfigSchema = z.object({
   title: z.string().min(3, { message: "O título deve ter pelo menos 3 caracteres" }),
   subtitle: z.string().min(3, { message: "O subtítulo deve ter pelo menos 3 caracteres" }),
+  logoUrl: z.string().url({ message: "URL da logo inválida" }).optional().or(z.literal("")),
   featuredVideoUrl: z.string().url({ message: "URL do vídeo inválida" }).optional().or(z.literal("")),
   featuredVideoType: z.enum(["youtube", "vimeo", "custom"]).default("youtube"),
   contactEmail: z.string().email({ message: "Email inválido" }),
@@ -42,6 +44,7 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
   const defaultValues = {
     title: config?.title || "",
     subtitle: config?.subtitle || "",
+    logoUrl: config?.logoUrl || "",
     featuredVideoUrl: config?.featuredVideoUrl || "",
     featuredVideoType: config?.featuredVideoType || "youtube",
     contactEmail: config?.contactEmail || "",
@@ -74,6 +77,7 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
     const siteConfig: SiteConfig = {
       title: data.title,
       subtitle: data.subtitle,
+      logoUrl: data.logoUrl,
       featuredVideoUrl: data.featuredVideoUrl,
       featuredVideoType: data.featuredVideoType,
       contactEmail: data.contactEmail,
@@ -106,6 +110,42 @@ export const SiteConfigForm = ({ config, onSubmit }: SiteConfigFormProps) => {
               </TabsList>
               
               <TabsContent value="general" className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="logoUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>URL da Logo</FormLabel>
+                      <FormControl>
+                        <div className="flex space-x-2">
+                          <Input placeholder="https://example.com/logo.png" {...field} />
+                          {field.value && (
+                            <div className="h-10 w-10 rounded-md border overflow-hidden">
+                              <img
+                                src={field.value}
+                                alt="Logo preview"
+                                className="h-full w-full object-contain"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Logo+Error';
+                                }}
+                              />
+                            </div>
+                          )}
+                          {!field.value && (
+                            <div className="h-10 w-10 rounded-md border flex items-center justify-center bg-muted">
+                              <Image className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
+                      </FormControl>
+                      <FormDescription>
+                        URL da imagem de logo que aparecerá acima do título
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
                 <FormField
                   control={form.control}
                   name="title"

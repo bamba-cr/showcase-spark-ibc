@@ -1,3 +1,4 @@
+
 import { Project } from "@/types/Project";
 import { SiteConfig } from "@/types/SiteConfig";
 import { supabase } from "@/integrations/supabase/client";
@@ -227,6 +228,7 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
         twitter?: string;
         facebook?: string;
         instagram?: string;
+        website?: string;
       } = {};
       
       if (socialLinksData && typeof socialLinksData === 'object' && !Array.isArray(socialLinksData)) {
@@ -251,11 +253,16 @@ export const fetchSiteConfig = async (): Promise<SiteConfig> => {
         if (links.instagram && typeof links.instagram === 'string') {
           socialLinks.instagram = links.instagram;
         }
+        
+        if (links.website && typeof links.website === 'string') {
+          socialLinks.website = links.website;
+        }
       }
       
       return {
         title: data.title,
         subtitle: data.subtitle,
+        logoUrl: data.logo_url || undefined,
         featuredVideoUrl: data.featured_video_url || undefined,
         featuredVideoType: data.featured_video_type as "youtube" | "vimeo" | "custom",
         contactEmail: data.contact_email,
@@ -291,6 +298,7 @@ export const saveSiteConfig = async (config: SiteConfig): Promise<void> => {
     const configData = {
       title: config.title,
       subtitle: config.subtitle,
+      logo_url: config.logoUrl || null,
       featured_video_url: config.featuredVideoUrl || null,
       featured_video_type: config.featuredVideoType || "youtube",
       contact_email: config.contactEmail,
@@ -347,6 +355,7 @@ const getDefaultSiteConfig = (): SiteConfig => {
   return {
     title: "Meu Portfólio Profissional",
     subtitle: "Desenvolvedor Web & Designer",
+    logoUrl: "",
     featuredVideoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     featuredVideoType: "youtube",
     contactEmail: "contato@exemplo.com",

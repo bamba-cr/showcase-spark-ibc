@@ -32,7 +32,7 @@ const Index = () => {
   const heroSocialLinks = {
     facebook: siteConfig?.socialLinks?.facebook,
     instagram: siteConfig?.socialLinks?.instagram,
-    website: siteConfig?.socialLinks?.website // Using the website field directly
+    website: siteConfig?.socialLinks?.website
   };
 
   return (
@@ -40,7 +40,8 @@ const Index = () => {
       <Navbar title={siteConfig?.title} />
       <HeroSection 
         title={siteConfig?.title} 
-        subtitle={siteConfig?.subtitle} 
+        subtitle={siteConfig?.subtitle}
+        logoUrl={siteConfig?.logoUrl}
         videoUrl={siteConfig?.featuredVideoUrl}
         videoType={siteConfig?.featuredVideoType} 
         socialLinks={heroSocialLinks}

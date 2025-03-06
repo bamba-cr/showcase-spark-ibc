@@ -7,6 +7,7 @@ interface HeroSectionProps {
   subtitle?: string;
   videoUrl?: string;
   videoType?: "youtube" | "vimeo" | "custom";
+  logoUrl?: string; // New prop for logo image
   socialLinks?: {
     facebook?: string;
     instagram?: string;
@@ -19,6 +20,7 @@ export const HeroSection = ({
   subtitle = "Transformando vidas", 
   videoUrl,
   videoType = "youtube",
+  logoUrl, // Add the logoUrl prop
   socialLinks = {}
 }: HeroSectionProps) => {
   const renderVideo = () => {
@@ -84,6 +86,20 @@ export const HeroSection = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
+          {/* Logo Image */}
+          {logoUrl && (
+            <div className="mb-4 flex justify-center">
+              <motion.img 
+                src={logoUrl} 
+                alt="Logo" 
+                className="h-28 object-contain" 
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+              />
+            </div>
+          )}
+          
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-2 font-heading">
             {title}
           </h1>
