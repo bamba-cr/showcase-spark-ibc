@@ -9,4 +9,5 @@ export type Project = {
   fullDescription?: string;
   video?: string;
   gallery: string[];
+  sponsorLogos?: string[];
 };

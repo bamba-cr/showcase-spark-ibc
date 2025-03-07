@@ -39,6 +39,7 @@ export const fetchProjects = async (): Promise<Project[]> => {
             description: project.description,
             fullDescription: project.full_description || "",
             video: project.video || "",
+            sponsorLogos: project.sponsor_logos ? (Array.isArray(project.sponsor_logos) ? project.sponsor_logos : []) : [],
             gallery: []
           } as Project;
         }
@@ -52,6 +53,7 @@ export const fetchProjects = async (): Promise<Project[]> => {
           description: project.description,
           fullDescription: project.full_description || "",
           video: project.video || "",
+          sponsorLogos: project.sponsor_logos ? (Array.isArray(project.sponsor_logos) ? project.sponsor_logos : []) : [],
           gallery: galleryImages.map(img => img.image_url)
         } as Project;
       })
@@ -78,6 +80,7 @@ export const addProject = async (project: Omit<Project, "id" | "gallery">): Prom
       description: project.description,
       full_description: project.fullDescription,
       video: project.video,
+      sponsor_logos: project.sponsorLogos || [],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -114,6 +117,7 @@ export const updateProject = async (updatedProject: Project): Promise<Project[]>
       description: updatedProject.description,
       full_description: updatedProject.fullDescription,
       video: updatedProject.video,
+      sponsor_logos: updatedProject.sponsorLogos || [],
       updated_at: new Date().toISOString()
     };
     

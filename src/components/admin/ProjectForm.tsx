@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Project } from "@/types/Project";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { X, Plus } from "lucide-react";
 
 type ProjectFormProps = {
   project?: Omit<Project, "id" | "gallery">;
@@ -27,6 +28,10 @@ const projectSchema = z.object({
 });
 
 export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
+  const [sponsorLogos, setSponsorLogos] = useState<string[]>(project?.sponsorLogos || []);
+  const [newSponsorLogo, setNewSponsorLogo] = useState("");
+  const [sponsorLogoError, setSponsorLogoError] = useState("");
+
   // Create an object with default values ensuring all properties are non-optional
   const defaultValues = {
     title: project?.title || "",
@@ -43,6 +48,29 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
     defaultValues,
   });
 
+  const handleAddSponsorLogo = () => {
+    if (!newSponsorLogo) {
+      setSponsorLogoError("URL não pode estar vazia");
+      return;
+    }
+
+    try {
+      // Validate URL
+      new URL(newSponsorLogo);
+      setSponsorLogos([...sponsorLogos, newSponsorLogo]);
+      setNewSponsorLogo("");
+      setSponsorLogoError("");
+    } catch (e) {
+      setSponsorLogoError("URL inválida");
+    }
+  };
+
+  const handleRemoveSponsorLogo = (index: number) => {
+    const updatedLogos = [...sponsorLogos];
+    updatedLogos.splice(index, 1);
+    setSponsorLogos(updatedLogos);
+  };
+
   const handleSubmit = (data: z.infer<typeof projectSchema>) => {
     // Ensure all required fields are present by creating a new object
     const projectData: Omit<Project, "id" | "gallery"> = {
@@ -53,11 +81,13 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
       description: data.description,
       fullDescription: data.fullDescription,
       video: data.video,
+      sponsorLogos: sponsorLogos,
     };
     
     onSubmit(projectData);
     if (!project) {
       form.reset();
+      setSponsorLogos([]);
     }
   };
 
@@ -127,6 +157,56 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
                   </FormItem>
                 )}
               />
+            </div>
+
+            {/* Sponsor logos section */}
+            <div>
+              <Label htmlFor="sponsorLogos">Logos dos Patrocinadores</Label>
+              
+              <div className="flex flex-wrap gap-2 mt-2 mb-3">
+                {sponsorLogos.map((logo, index) => (
+                  <div key={index} className="relative group">
+                    <img 
+                      src={logo} 
+                      alt={`Patrocinador ${index + 1}`} 
+                      className="h-12 w-auto object-contain border rounded p-1"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveSponsorLogo(index)}
+                      className="absolute -top-2 -right-2 bg-destructive text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Remover logo"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex gap-2">
+                <Input
+                  id="newSponsorLogo"
+                  value={newSponsorLogo}
+                  onChange={(e) => {
+                    setNewSponsorLogo(e.target.value);
+                    if (sponsorLogoError) setSponsorLogoError("");
+                  }}
+                  placeholder="URL do logo do patrocinador"
+                  className={sponsorLogoError ? "border-destructive" : ""}
+                />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleAddSponsorLogo}
+                  className="shrink-0"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Adicionar
+                </Button>
+              </div>
+              {sponsorLogoError && (
+                <p className="text-sm font-medium text-destructive mt-1">{sponsorLogoError}</p>
+              )}
             </div>
 
             <FormField

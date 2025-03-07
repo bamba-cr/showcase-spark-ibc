@@ -1,3 +1,4 @@
+
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight, Facebook, Instagram, Globe } from "lucide-react";
@@ -77,6 +78,21 @@ const ProjectCard = ({ project, onClick }: { project: Project; onClick: () => vo
           <h3 className="text-lg font-bold">{project.title}</h3>
         </div>
         
+        {/* Sponsor logos display */}
+        {project.sponsorLogos && project.sponsorLogos.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            <span className="text-xs text-gray-500 mr-1 self-center">Patrocinado por:</span>
+            {project.sponsorLogos.map((logo, index) => (
+              <img 
+                key={index} 
+                src={logo} 
+                alt={`Patrocinador ${index + 1}`} 
+                className="h-6 w-auto object-contain"
+              />
+            ))}
+          </div>
+        )}
+        
         <p className="text-gray-600 mb-4 text-sm">{project.description}</p>
         
         <div className="mb-4">
@@ -118,6 +134,21 @@ const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => 
             </div>
             <h2 className="text-xl font-bold">{project.title}</h2>
           </div>
+          
+          {/* Sponsor logos display in detail view */}
+          {project.sponsorLogos && project.sponsorLogos.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              <span className="text-sm text-gray-500 mr-1 self-center">Patrocinado por:</span>
+              {project.sponsorLogos.map((logo, index) => (
+                <img 
+                  key={index} 
+                  src={logo} 
+                  alt={`Patrocinador ${index + 1}`} 
+                  className="h-8 w-auto object-contain"
+                />
+              ))}
+            </div>
+          )}
           
           <p className="text-gray-600 mb-4 text-sm">{project.description}</p>
           

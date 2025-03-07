@@ -50,6 +50,7 @@ export type Database = {
           id: string
           image_url: string
           logo_url: string
+          sponsor_logos: Json | null
           title: string
           updated_at: string | null
           video: string | null
@@ -62,6 +63,7 @@ export type Database = {
           id?: string
           image_url: string
           logo_url: string
+          sponsor_logos?: Json | null
           title: string
           updated_at?: string | null
           video?: string | null
@@ -74,6 +76,7 @@ export type Database = {
           id?: string
           image_url?: string
           logo_url?: string
+          sponsor_logos?: Json | null
           title?: string
           updated_at?: string | null
           video?: string | null
