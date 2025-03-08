@@ -16,6 +16,8 @@ const preloadMedia = (urls) => {
       const video = document.createElement("video");
       video.src = url;
       video.preload = "auto";
+      video.muted = true;
+      video.play();
     } else {
       const img = new Image();
       img.src = url;
@@ -71,6 +73,9 @@ const Index = () => {
         videoType={siteConfig?.featuredVideoType} 
         socialLinks={heroSocialLinks}
         lazy={true} // Ativa lazy loading
+        autoPlay={true} // Inicia automaticamente
+        muted={true} // Deixa mudo para evitar bloqueios de autoplay
+        loop={true} // Faz o vídeo rodar em loop
       />
       <Stats />
       <ProjectGallery images={siteConfig?.projectImages} lazy={true} />
