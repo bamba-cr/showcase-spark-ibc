@@ -165,13 +165,13 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
             <div>
               <Label htmlFor="sponsorLogos">Logos dos Patrocinadores</Label>
               
-              <div className="flex flex-wrap gap-2 mt-2 mb-3">
+              <div className="flex flex-wrap gap-3 mt-2 mb-3">
                 {sponsorLogos.map((logo, index) => (
                   <div key={index} className="relative group">
                     <img 
                       src={logo} 
                       alt={`Patrocinador ${index + 1}`} 
-                      className="h-12 w-auto max-w-[120px] object-contain border rounded p-1"
+                      className="h-16 w-auto max-w-[150px] object-contain border rounded p-2"
                     />
                     <button
                       type="button"

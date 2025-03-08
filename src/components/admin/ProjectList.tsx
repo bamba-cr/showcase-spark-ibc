@@ -105,7 +105,7 @@ const DraggableProjectCard = ({
           <img 
             src={project.logoUrl} 
             alt="" 
-            className="w-6 h-6"
+            className="w-8 h-8 object-contain" // Increased size for better visibility
           />
           <CardTitle className="text-lg">{project.title}</CardTitle>
         </div>
