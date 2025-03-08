@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Project } from "@/types/Project";
@@ -18,21 +17,18 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
-  // Efeito para autosave
   useEffect(() => {
-    // Simular autosave com um delay
     const hasChanges = videoFile || imageFiles.length > 0;
     
     if (autoSave && hasChanges) {
       const timer = setTimeout(() => {
         handleSubmit(new Event('autoSave') as unknown as React.FormEvent);
-      }, 30000); // Autosave a cada 30 segundos
+      }, 30000);
       
       return () => clearTimeout(timer);
     }
   }, [videoFile, imageFiles, autoSave]);
 
-  // Handler para vídeo
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -45,31 +41,35 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
     }
   };
 
-  // Handler para imagens
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     processImageFiles(files);
   };
 
-  // Processamento de arquivos de imagem
   const processImageFiles = (files: File[]) => {
-    // Verificar limite máximo de imagens (contando as já existentes)
     const totalImages = project.gallery.length + imagePreviews.length + files.length;
     if (totalImages > 6) {
       toast.error(`Você ultrapassou o limite de 6 imagens (${project.gallery.length} existentes + ${files.length} novas).`);
       return;
     }
     
-    // Include .heic files in the valid types
-    const validFiles = files.filter(file => 
-      file.type.startsWith('image/') || 
-      file.name.toLowerCase().endsWith('.heic'));
+    const validFiles = files.filter(file => {
+      const isValidType = file.type.startsWith('image/') || 
+        file.name.toLowerCase().endsWith('.heic');
+      
+      const isValidSize = file.size <= 30 * 1024 * 1024;
+      
+      if (!isValidSize) {
+        toast.error(`O arquivo ${file.name} excede o limite de 30MB.`);
+      }
+      
+      return isValidType && isValidSize;
+    });
       
     if (validFiles.length !== files.length) {
-      toast.error("Alguns arquivos selecionados não são imagens válidas.");
+      toast.error("Alguns arquivos selecionados não são imagens válidas ou excedem o limite de tamanho.");
     }
     
-    // Criar previews para as imagens selecionadas
     validFiles.forEach(file => {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -84,7 +84,6 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
     toast.success(`${validFiles.length} imagens selecionadas com sucesso!`);
   };
 
-  // Funções para drag and drop
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
@@ -104,13 +103,11 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
     }
   };
 
-  // Remover imagem do preview
   const removeImagePreview = (index: number) => {
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
     setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Remover imagem existente da galeria
   const removeExistingImage = (index: number) => {
     const newGallery = [...project.gallery];
     newGallery.splice(index, 1);
@@ -118,17 +115,12 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
     toast.success("Imagem removida da galeria!");
   };
 
-  // Submit do formulário
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     setIsSaving(true);
     
-    // Simular um atraso de rede para fins de demonstração
     setTimeout(() => {
-      // Em uma implementação real, aqui você faria o upload dos arquivos para um servidor
-      // e atualizaria as URLs no projeto
-      
       const newGalleryItems = imagePreviews.map((preview) => preview);
       const updatedGallery = [...project.gallery, ...newGalleryItems];
       
@@ -138,7 +130,6 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
         video: videoFile ? URL.createObjectURL(videoFile) : project.video
       });
       
-      // Limpar estados após o sucesso
       setVideoFile(null);
       setImageFiles([]);
       setImagePreviews([]);
@@ -181,7 +172,6 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Vídeo */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Vídeo Principal
@@ -233,7 +223,6 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
           )}
         </div>
 
-        {/* Galeria de Imagens */}
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="block text-sm font-medium text-gray-700">
@@ -244,7 +233,6 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
             </span>
           </div>
           
-          {/* Área de upload com drag and drop */}
           <div
             className={`border-2 border-dashed rounded-lg p-4 transition-colors ${
               isDragging 
@@ -278,11 +266,10 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
                 <PlusCircle className="inline-block mr-1 w-4 h-4" />
                 Selecionar Imagens
               </label>
-              <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF até 5MB</p>
+              <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF, HEIC até 30MB</p>
             </div>
           </div>
           
-          {/* Preview das novas imagens */}
           {imagePreviews.length > 0 && (
             <div className="mt-4">
               <h4 className="text-sm font-medium text-gray-700 mb-2">Novas imagens:</h4>
@@ -307,7 +294,6 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
             </div>
           )}
           
-          {/* Preview da galeria atual */}
           {project.gallery.length > 0 && (
             <div className="mt-4">
               <h4 className="text-sm font-medium text-gray-700 mb-2">Imagens existentes:</h4>
