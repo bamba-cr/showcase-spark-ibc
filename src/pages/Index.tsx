@@ -1,4 +1,4 @@
-
+import { useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/HeroSection";
 import { ProjectGallery } from "@/components/ProjectGallery";
@@ -8,14 +8,40 @@ import { Footer } from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
 import { fetchSiteConfig } from "@/utils/databaseService";
 
+const preloadMedia = (urls) => {
+  urls.forEach((url) => {
+    if (!url) return;
+    
+    if (url.endsWith(".mp4") || url.endsWith(".webm")) {
+      const video = document.createElement("video");
+      video.src = url;
+      video.preload = "auto";
+    } else {
+      const img = new Image();
+      img.src = url;
+    }
+  });
+};
+
 const Index = () => {
   // Fetch site configuration using react-query
   const { data: siteConfig, isLoading } = useQuery({
-    queryKey: ['siteConfig'],
+    queryKey: ["siteConfig"],
     queryFn: fetchSiteConfig,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes (formerly cacheTime)
+    staleTime: 1000 * 60 * 10, // 10 minutes
+    gcTime: 1000 * 60 * 20, // 20 minutes
   });
+
+  useEffect(() => {
+    if (siteConfig) {
+      const mediaUrls = [
+        siteConfig.logoUrl,
+        siteConfig.featuredVideoUrl,
+        ...(siteConfig.projectImages || []),
+      ];
+      preloadMedia(mediaUrls);
+    }
+  }, [siteConfig]);
 
   if (isLoading) {
     return (
@@ -28,11 +54,10 @@ const Index = () => {
     );
   }
 
-  // Extract only the needed social links for the hero section
   const heroSocialLinks = {
     facebook: siteConfig?.socialLinks?.facebook,
     instagram: siteConfig?.socialLinks?.instagram,
-    website: siteConfig?.socialLinks?.website
+    website: siteConfig?.socialLinks?.website,
   };
 
   return (
@@ -45,9 +70,10 @@ const Index = () => {
         videoUrl={siteConfig?.featuredVideoUrl}
         videoType={siteConfig?.featuredVideoType} 
         socialLinks={heroSocialLinks}
+        lazy={true} // Ativa lazy loading
       />
       <Stats />
-      <ProjectGallery />
+      <ProjectGallery images={siteConfig?.projectImages} lazy={true} />
       <Contact email={siteConfig?.contactEmail} phone={siteConfig?.contactPhone} socialLinks={siteConfig?.socialLinks} />
       <Footer />
     </div>
