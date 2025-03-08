@@ -73,12 +73,12 @@ const ProjectCard = ({ project, onClick }: { project: Project; onClick: () => vo
       <div className="p-4">
         <div className="flex items-center mb-3">
           <div className="w-12 h-12 bg-primary/10 rounded-full mr-3 flex items-center justify-center">
-            <img src={project.logoUrl} alt={project.title} className="w-7 h-7" />
+            <img src={project.logoUrl} alt={project.title} className="w-7 h-7 object-contain" />
           </div>
           <h3 className="text-lg font-bold">{project.title}</h3>
         </div>
         
-        {/* Sponsor logos display */}
+        {/* Sponsor logos display with responsive sizing */}
         {project.sponsorLogos && project.sponsorLogos.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
             <span className="text-xs text-gray-500 mr-1 self-center">Patrocinado por:</span>
@@ -87,7 +87,7 @@ const ProjectCard = ({ project, onClick }: { project: Project; onClick: () => vo
                 key={index} 
                 src={logo} 
                 alt={`Patrocinador ${index + 1}`} 
-                className="h-6 w-auto object-contain"
+                className="h-6 w-auto max-w-[80px] object-contain" 
               />
             ))}
           </div>
@@ -130,12 +130,12 @@ const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => 
         <div className="p-4">
           <div className="flex items-center mb-3">
             <div className="w-10 h-10 bg-primary/10 rounded-full mr-3 flex items-center justify-center">
-              <img src={project.logoUrl} alt={project.title} className="w-6 h-6" />
+              <img src={project.logoUrl} alt={project.title} className="w-6 h-6 object-contain" />
             </div>
             <h2 className="text-xl font-bold">{project.title}</h2>
           </div>
           
-          {/* Sponsor logos display in detail view */}
+          {/* Sponsor logos display in detail view with responsive sizing */}
           {project.sponsorLogos && project.sponsorLogos.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-3">
               <span className="text-sm text-gray-500 mr-1 self-center">Patrocinado por:</span>
@@ -144,7 +144,7 @@ const ProjectDetail = ({ project, onClose }: { project: Project; onClose: () => 
                   key={index} 
                   src={logo} 
                   alt={`Patrocinador ${index + 1}`} 
-                  className="h-8 w-auto object-contain"
+                  className="h-8 w-auto max-w-[100px] sm:max-w-[120px] object-contain"
                 />
               ))}
             </div>

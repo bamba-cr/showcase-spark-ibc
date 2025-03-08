@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Project } from "@/types/Project";
 import { Button } from "@/components/ui/button";
@@ -32,7 +31,6 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
   const [newSponsorLogo, setNewSponsorLogo] = useState("");
   const [sponsorLogoError, setSponsorLogoError] = useState("");
 
-  // Create an object with default values ensuring all properties are non-optional
   const defaultValues = {
     title: project?.title || "",
     category: project?.category || "",
@@ -55,11 +53,17 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
     }
 
     try {
-      // Validate URL
-      new URL(newSponsorLogo);
-      setSponsorLogos([...sponsorLogos, newSponsorLogo]);
-      setNewSponsorLogo("");
-      setSponsorLogoError("");
+      if (newSponsorLogo.toLowerCase().endsWith('.heic') || 
+          newSponsorLogo.match(/^https?:\/\/.+/)) {
+        setSponsorLogos([...sponsorLogos, newSponsorLogo]);
+        setNewSponsorLogo("");
+        setSponsorLogoError("");
+      } else {
+        new URL(newSponsorLogo);
+        setSponsorLogos([...sponsorLogos, newSponsorLogo]);
+        setNewSponsorLogo("");
+        setSponsorLogoError("");
+      }
     } catch (e) {
       setSponsorLogoError("URL inválida");
     }
@@ -72,7 +76,6 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
   };
 
   const handleSubmit = (data: z.infer<typeof projectSchema>) => {
-    // Ensure all required fields are present by creating a new object
     const projectData: Omit<Project, "id" | "gallery"> = {
       title: data.title,
       category: data.category,
@@ -159,7 +162,6 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
               />
             </div>
 
-            {/* Sponsor logos section */}
             <div>
               <Label htmlFor="sponsorLogos">Logos dos Patrocinadores</Label>
               
@@ -169,7 +171,7 @@ export const ProjectForm = ({ project, onSubmit }: ProjectFormProps) => {
                     <img 
                       src={logo} 
                       alt={`Patrocinador ${index + 1}`} 
-                      className="h-12 w-auto object-contain border rounded p-1"
+                      className="h-12 w-auto max-w-[120px] object-contain border rounded p-1"
                     />
                     <button
                       type="button"

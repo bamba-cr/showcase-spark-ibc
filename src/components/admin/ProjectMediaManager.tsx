@@ -60,7 +60,11 @@ export const ProjectMediaManager = ({ project, onUpdate }: ProjectMediaManagerPr
       return;
     }
     
-    const validFiles = files.filter(file => file.type.startsWith('image/'));
+    // Include .heic files in the valid types
+    const validFiles = files.filter(file => 
+      file.type.startsWith('image/') || 
+      file.name.toLowerCase().endsWith('.heic'));
+      
     if (validFiles.length !== files.length) {
       toast.error("Alguns arquivos selecionados não são imagens válidas.");
     }
