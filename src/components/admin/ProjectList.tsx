@@ -1,9 +1,9 @@
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Project } from "@/types/Project";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit2, Trash2, Image, Move, ArrowUp, ArrowDown } from "lucide-react";
+import { Edit2, Trash2, Image, Move, ArrowUp, ArrowDown, Plus } from "lucide-react";
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -16,12 +16,24 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useDrag, useDrop } from "react-dnd";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 type ProjectListProps = {
   projects: Project[];
   onSelect: (project: Project) => void;
   onDelete: (projectId: string) => void;
   onReorder: (projects: Project[]) => void;
+  onUpdate: (project: Project) => void;
 };
 
 type DragItem = {
@@ -30,18 +42,160 @@ type DragItem = {
   type: string;
 };
 
+const SponsorLogoManager = ({
+  project,
+  onUpdate
+}: {
+  project: Project,
+  onUpdate: (project: Project) => void
+}) => {
+  const [logos, setLogos] = useState<string[]>(project.sponsorLogos || []);
+  const [newLogoUrl, setNewLogoUrl] = useState("");
+  const [error, setError] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const validateUrl = (url: string) => {
+    try {
+      return url.toLowerCase().endsWith('.heic') || 
+             url.match(/^https?:\/\/.+/) ||
+             Boolean(new URL(url));
+    } catch {
+      return false;
+    }
+  };
+  
+  const handleAddLogo = () => {
+    if (!newLogoUrl.trim()) {
+      setError("URL não pode estar vazia");
+      return;
+    }
+    
+    if (!validateUrl(newLogoUrl)) {
+      setError("URL inválida");
+      return;
+    }
+    
+    const updatedLogos = [...logos, newLogoUrl];
+    setLogos(updatedLogos);
+    setNewLogoUrl("");
+    setError("");
+  };
+  
+  const handleRemoveLogo = (index: number) => {
+    const updatedLogos = [...logos];
+    updatedLogos.splice(index, 1);
+    setLogos(updatedLogos);
+  };
+  
+  const handleSave = () => {
+    const updatedProject = {
+      ...project,
+      sponsorLogos: logos
+    };
+    
+    onUpdate(updatedProject);
+    setIsOpen(false);
+    toast.success("Logos de patrocinadores atualizados com sucesso!");
+  };
+  
+  return (
+    <>
+      <Button 
+        variant="outline" 
+        size="sm" 
+        onClick={() => setIsOpen(true)}
+      >
+        <Image className="w-4 h-4 mr-1" />
+        Patrocinadores
+      </Button>
+      
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Gerenciar Logos de Patrocinadores</DialogTitle>
+            <DialogDescription>
+              Adicione, edite ou remova os logos dos patrocinadores para {project.title}.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <div className="flex flex-wrap gap-3 mb-4">
+              {logos.length === 0 ? (
+                <p className="text-sm text-gray-500">Nenhum logo de patrocinador adicionado.</p>
+              ) : (
+                logos.map((logo, index) => (
+                  <div key={index} className="relative group">
+                    <img 
+                      src={logo} 
+                      alt={`Logo ${index + 1}`}
+                      className="h-16 w-auto max-w-[150px] object-contain border rounded p-2"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveLogo(index)}
+                      className="absolute -top-2 -right-2 bg-destructive text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label="Remover logo"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <Input
+                  value={newLogoUrl}
+                  onChange={(e) => {
+                    setNewLogoUrl(e.target.value);
+                    if (error) setError("");
+                  }}
+                  placeholder="URL do logo"
+                  className={error ? "border-destructive" : ""}
+                />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleAddLogo}
+                  className="shrink-0"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Adicionar
+                </Button>
+              </div>
+              {error && (
+                <p className="text-sm font-medium text-destructive">{error}</p>
+              )}
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancelar</Button>
+            </DialogClose>
+            <Button onClick={handleSave}>Salvar Alterações</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
 const DraggableProjectCard = ({ 
   project, 
   index, 
   onSelect, 
   onDelete, 
-  onMove
+  onMove,
+  onUpdate
 }: { 
   project: Project, 
   index: number, 
   onSelect: (project: Project) => void, 
   onDelete: (projectId: string) => void,
-  onMove: (dragIndex: number, hoverIndex: number) => void 
+  onMove: (dragIndex: number, hoverIndex: number) => void,
+  onUpdate: (project: Project) => void
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   
@@ -78,6 +232,8 @@ const DraggableProjectCard = ({
   
   drag(drop(ref));
   
+  const hasLogos = project.sponsorLogos && project.sponsorLogos.length > 0;
+  
   return (
     <Card 
       ref={ref} 
@@ -105,7 +261,7 @@ const DraggableProjectCard = ({
           <img 
             src={project.logoUrl} 
             alt="" 
-            className="w-8 h-8 object-contain" // Increased size for better visibility
+            className="w-8 h-8 object-contain" 
           />
           <CardTitle className="text-lg">{project.title}</CardTitle>
         </div>
@@ -113,6 +269,27 @@ const DraggableProjectCard = ({
       </CardHeader>
       <CardContent className="pb-2">
         <p className="text-sm text-gray-600 line-clamp-2">{project.description}</p>
+        
+        {hasLogos && (
+          <div className="mt-2">
+            <p className="text-xs text-gray-500 mb-1">Patrocinadores:</p>
+            <div className="flex flex-wrap gap-2">
+              {project.sponsorLogos.slice(0, 3).map((logo, idx) => (
+                <img 
+                  key={idx}
+                  src={logo}
+                  alt={`Patrocinador ${idx+1}`}
+                  className="h-8 w-auto max-w-[80px] object-contain"
+                />
+              ))}
+              {project.sponsorLogos.length > 3 && (
+                <span className="text-xs text-gray-500 self-center">
+                  +{project.sponsorLogos.length - 3} mais
+                </span>
+              )}
+            </div>
+          </div>
+        )}
       </CardContent>
       <CardFooter className="flex justify-between pt-2">
         <Button 
@@ -123,14 +300,12 @@ const DraggableProjectCard = ({
           <Edit2 className="w-4 h-4 mr-1" />
           Editar
         </Button>
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={() => onSelect(project)}
-        >
-          <Image className="w-4 h-4 mr-1" />
-          Mídia
-        </Button>
+        
+        <SponsorLogoManager 
+          project={project}
+          onUpdate={onUpdate}
+        />
+        
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="outline" size="sm" className="text-red-500 border-red-200 hover:bg-red-50">
@@ -161,7 +336,7 @@ const DraggableProjectCard = ({
   );
 };
 
-export const ProjectList = ({ projects, onSelect, onDelete, onReorder }: ProjectListProps) => {
+export const ProjectList = ({ projects, onSelect, onDelete, onReorder, onUpdate }: ProjectListProps) => {
   const moveCard = (dragIndex: number, hoverIndex: number) => {
     const newProjects = [...projects];
     const draggedItem = newProjects[dragIndex];
@@ -196,6 +371,7 @@ export const ProjectList = ({ projects, onSelect, onDelete, onReorder }: Project
               onSelect={onSelect}
               onDelete={onDelete}
               onMove={moveCard}
+              onUpdate={onUpdate}
             />
           ))
         )}

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { ProjectMediaManager } from "@/components/admin/ProjectMediaManager";
 import { ProjectList } from "@/components/admin/ProjectList";
@@ -186,6 +187,7 @@ const Admin = () => {
               onSelect={handleSelectProject} 
               onDelete={handleDeleteProject}
               onReorder={handleReorderProjects}
+              onUpdate={handleUpdateProject}
             />
           </TabsContent>
           
